@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Caller.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.callhandlers</a> &gt; <span class="el_source">Caller.java</span></div><h1>Caller.java</h1><pre class="source lang-java linenums">package valorantstats.model.callhandlers;
+
+import com.google.gson.Gson;
+import valorantstats.model.CacheManager;
+import valorantstats.model.apicalls.ApiResponse;
+import valorantstats.model.apicalls.InputApiCalls;
+import valorantstats.model.enums.CallResult;
+import valorantstats.model.jsonobjects.ErrorResponseInput;
+
+import java.util.AbstractMap.SimpleEntry;
+
+/**
+ * Calls requests for data for a team name and match data for a team id
+ */
+public abstract class Caller {
+
+<span class="fc" id="L17">  Caller nextCaller = null;</span>
+  CacheManager cacheManager;
+  InputApiCalls inputApiCalls;
+
+<span class="fc" id="L21">  public Caller(CacheManager cacheManager, InputApiCalls inputApiCalls) {</span>
+<span class="fc" id="L22">    this.cacheManager = cacheManager;</span>
+<span class="fc" id="L23">    this.inputApiCalls = inputApiCalls;</span>
+<span class="fc" id="L24">  }</span>
+
+  /**
+   *
+   * @param nextCaller caller responsible for processing the team name or id
+   */
+  public void setNextCaller(Caller nextCaller) {
+<span class="fc" id="L31">    this.nextCaller = nextCaller;</span>
+<span class="fc" id="L32">  }</span>
+
+  /**
+   * Request team information for a team name
+   * @param name team name to be searched for
+   * @param cacheOverride override/go past database or not
+   * @return response result and body content
+   */
+  public abstract SimpleEntry&lt;CallResult, String&gt; callTeam(String name, boolean cacheOverride);
+
+  /**
+   * Request match information for a team id
+   * @param name team name to be searched for
+   * @param cacheOverride override/go past database or not
+   * @return response result and body content
+   */
+  public abstract SimpleEntry&lt;CallResult, String&gt; callMatch(String name, boolean cacheOverride);
+
+  /**
+   * Checks if response was successful or failed
+   * @param response ApiResponse representing the response data from an api call
+   * @return success or error depending on response and either content or error message
+   */
+  public SimpleEntry&lt;CallResult, String&gt; validateResponseInputApi(ApiResponse response) {
+    SimpleEntry&lt;CallResult, String&gt; result;
+<span class="fc" id="L57">    int statusCode = response.getStatusCode();</span>
+<span class="fc" id="L58">    String body = response.getBody();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (statusCode == 200) {</span>
+<span class="fc" id="L60">      result = new SimpleEntry&lt;&gt;(CallResult.SUCCESS, body);</span>
+    } else {
+<span class="fc" id="L62">      ErrorResponseInput ero = new Gson().fromJson(body, ErrorResponseInput.class);</span>
+<span class="fc" id="L63">      String msg = ero.getError();</span>
+<span class="fc" id="L64">      result = new SimpleEntry&lt;&gt;(CallResult.ERROR, msg);</span>
+    }
+
+<span class="fc" id="L67">    return result;</span>
+  }
+
+  public void setInputApiCalls(InputApiCalls inputApiCalls) {
+<span class="fc" id="L71">    this.inputApiCalls = inputApiCalls;</span>
+<span class="fc" id="L72">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

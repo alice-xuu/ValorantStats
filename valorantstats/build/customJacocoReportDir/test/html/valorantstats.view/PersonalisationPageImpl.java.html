@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonalisationPageImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.view</a> &gt; <span class="el_source">PersonalisationPageImpl.java</span></div><h1>PersonalisationPageImpl.java</h1><pre class="source lang-java linenums">package valorantstats.view;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import valorantstats.presenter.DisplayPresenterImpl;
+
+/** Implementation of personalisationPage for user colors */
+public class PersonalisationPageImpl implements PersonalisationPage {
+
+  private final GridPane personalisationPage;
+  private final GridPane previewPane;
+  private DisplayPresenterImpl displayPresenter;
+
+<span class="nc" id="L24">  public PersonalisationPageImpl() {</span>
+
+<span class="nc" id="L26">    this.previewPane = new GridPane();</span>
+<span class="nc" id="L27">    this.personalisationPage = new GridPane();</span>
+<span class="nc" id="L28">    personalisationPage.setVgap(20);</span>
+<span class="nc" id="L29">    personalisationPage.setHgap(20);</span>
+<span class="nc" id="L30">    personalisationPage.setPadding(new Insets(20));</span>
+
+<span class="nc" id="L32">    ColumnConstraints col1 = new ColumnConstraints();</span>
+<span class="nc" id="L33">    col1.setPercentWidth(100);</span>
+<span class="nc" id="L34">    personalisationPage.getColumnConstraints().addAll(col1);</span>
+
+<span class="nc" id="L36">    Label lblPers = new Label(&quot;Personalisation&quot;);</span>
+<span class="nc" id="L37">    Font font2 = Font.font(&quot;Arial&quot;, FontWeight.NORMAL, 20);</span>
+<span class="nc" id="L38">    lblPers.setFont(font2);</span>
+<span class="nc" id="L39">    GridPane.setFillWidth(lblPers, true);</span>
+<span class="nc" id="L40">    lblPers.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L41">    lblPers.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L43">    personalisationPage.addRow(0, lblPers);</span>
+<span class="nc" id="L44">    personalisationPage.addRow(1, colourSettingsPane());</span>
+<span class="nc" id="L45">    personalisationPage.addRow(2, previewPane);</span>
+<span class="nc" id="L46">  }</span>
+
+  @Override
+  public Pane colourSettingsPane() {
+<span class="nc" id="L50">    ColorPicker backgroundColorPicker = new ColorPicker(Color.web(&quot;#364966&quot;));</span>
+<span class="nc" id="L51">    ColorPicker textColorPicker = new ColorPicker(Color.WHITE);</span>
+<span class="nc" id="L52">    ColorPicker buttonColorPicker = new ColorPicker(Color.web(&quot;#dc3d4b&quot;));</span>
+<span class="nc" id="L53">    ColorPicker highlightColorPicker = new ColorPicker(Color.web(&quot;#b78460&quot;));</span>
+
+<span class="nc" id="L55">    GridPane colorSettingsPane = new GridPane();</span>
+<span class="nc" id="L56">    colorSettingsPane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L57">    colorSettingsPane.setHgap(10);</span>
+<span class="nc" id="L58">    colorSettingsPane.setVgap(10);</span>
+<span class="nc" id="L59">    colorSettingsPane.addRow(0, new Label(&quot;Background color:&quot;), backgroundColorPicker);</span>
+<span class="nc" id="L60">    colorSettingsPane.addRow(1, new Label(&quot;Text color:&quot;), textColorPicker);</span>
+<span class="nc" id="L61">    colorSettingsPane.addRow(2, new Label(&quot;Button color:&quot;), buttonColorPicker);</span>
+<span class="nc" id="L62">    colorSettingsPane.addRow(3, new Label(&quot;Highlight color:&quot;), highlightColorPicker);</span>
+
+<span class="nc" id="L64">    backgroundColorPicker</span>
+<span class="nc" id="L65">        .valueProperty()</span>
+<span class="nc" id="L66">        .addListener(</span>
+            (observable, oldColor, newColor) -&gt;
+<span class="nc" id="L68">                updateBackgroundColorString(backgroundColorPicker.getValue()));</span>
+<span class="nc" id="L69">    textColorPicker</span>
+<span class="nc" id="L70">        .valueProperty()</span>
+<span class="nc" id="L71">        .addListener(</span>
+<span class="nc" id="L72">            (observable, oldColor, newColor) -&gt; updateTextColorString(textColorPicker.getValue()));</span>
+<span class="nc" id="L73">    buttonColorPicker</span>
+<span class="nc" id="L74">        .valueProperty()</span>
+<span class="nc" id="L75">        .addListener(</span>
+            (observable, oldColor, newColor) -&gt;
+<span class="nc" id="L77">                updateButtonColorString(buttonColorPicker.getValue()));</span>
+
+<span class="nc" id="L79">    highlightColorPicker</span>
+<span class="nc" id="L80">        .valueProperty()</span>
+<span class="nc" id="L81">        .addListener(</span>
+            (observable, oldColor, newColor) -&gt;
+<span class="nc" id="L83">                updateHighlightColorString(highlightColorPicker.getValue()));</span>
+
+<span class="nc" id="L85">    return colorSettingsPane;</span>
+  }
+
+  @Override
+  public void buildPreviewPane(String highlightColor) {
+<span class="nc" id="L90">    previewPane.getChildren().clear();</span>
+<span class="nc" id="L91">    Label lbl = new Label(&quot;The quick brown fox jumps over the lazy dog&quot;);</span>
+<span class="nc" id="L92">    lbl.setWrapText(true);</span>
+<span class="nc" id="L93">    lbl.setOnMouseEntered((event) -&gt; lbl.setStyle(highlightColor));</span>
+<span class="nc" id="L94">    lbl.setOnMouseExited((event) -&gt; lbl.setStyle(&quot;-fx-background-color: TRANSPARENT&quot;));</span>
+
+<span class="nc" id="L96">    Button btn = new Button(&quot;Test&quot;);</span>
+<span class="nc" id="L97">    VBox vBox = new VBox(lbl, btn);</span>
+<span class="nc" id="L98">    previewPane.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L100">    previewPane.getChildren().add(vBox);</span>
+<span class="nc" id="L101">    previewPane.setPrefWidth(300);</span>
+<span class="nc" id="L102">  }</span>
+
+  @Override
+  public void updateBackgroundColorString(Color backgroundColor) {
+<span class="nc" id="L106">    String colorString = &quot;-fx-background-color: &quot; + toHexString(backgroundColor) + &quot;;&quot;;</span>
+<span class="nc" id="L107">    displayPresenter.updateBackgroundColor(colorString);</span>
+<span class="nc" id="L108">  }</span>
+
+  @Override
+  public void updateTextColorString(Color textColor) {
+<span class="nc" id="L112">    String colorString = &quot;-fx-text-background-color: &quot; + toHexString(textColor) + &quot;;&quot;;</span>
+<span class="nc" id="L113">    displayPresenter.updateTextColor(colorString);</span>
+<span class="nc" id="L114">  }</span>
+
+  @Override
+  public void updateButtonColorString(Color buttonColor) {
+<span class="nc" id="L118">    String colorString = &quot;-fx-base: &quot; + toHexString(buttonColor) + &quot;;&quot;;</span>
+<span class="nc" id="L119">    displayPresenter.updateButtonColor(colorString);</span>
+<span class="nc" id="L120">  }</span>
+
+  @Override
+  public void updateHighlightColorString(Color highlightColor) {
+<span class="nc" id="L124">    String colorString = &quot;-fx-background-color: &quot; + toHexString(highlightColor) + &quot;;&quot;;</span>
+<span class="nc" id="L125">    displayPresenter.updateHighlightColor(colorString);</span>
+<span class="nc" id="L126">  }</span>
+
+  @Override
+  public Pane getPersonalisationPage() {
+<span class="nc" id="L130">    return personalisationPage;</span>
+  }
+
+  @Override
+  public void setDisplayPresenter(DisplayPresenterImpl displayPresenter) {
+<span class="nc" id="L135">    this.displayPresenter = displayPresenter;</span>
+<span class="nc" id="L136">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

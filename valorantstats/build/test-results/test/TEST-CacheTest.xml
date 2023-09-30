@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CacheTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-09-30T08:17:13" hostname="MacBook-AX.local" time="2.92">
+  <properties/>
+  <testcase name="updateCacheTeamAndMatchClear()" classname="CacheTest" time="2.685"/>
+  <testcase name="ssearchCacheMatchOnlineValid()" classname="CacheTest" time="0.07"/>
+  <testcase name="searchCacheTeamOnlineValid()" classname="CacheTest" time="0.013"/>
+  <testcase name="searchCacheTeamOnlineNoCache()" classname="CacheTest" time="0.004"/>
+  <testcase name="cacheTeam()" classname="CacheTest" time="0.005"/>
+  <testcase name="searchCacheMatchOnlineNoCache()" classname="CacheTest" time="0.007"/>
+  <testcase name="cacheMatch()" classname="CacheTest" time="0.006"/>
+  <testcase name="verifyCachedResultERROR()" classname="CacheTest" time="0.093"/>
+  <testcase name="verifyCachedResultSuccess()" classname="CacheTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

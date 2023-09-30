@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Database.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model</a> &gt; <span class="el_source">Database.java</span></div><h1>Database.java</h1><pre class="source lang-java linenums">package valorantstats.model;
+
+import valorantstats.model.enums.CallResult;
+
+import java.io.File;
+import java.sql.*;
+import java.util.AbstractMap.SimpleEntry;
+
+/**
+ * Database containing user information and caching
+ */
+<span class="nc" id="L12">public class Database {</span>
+
+    private static final String dbName = &quot;pandascore.db&quot;;
+    private static final String dbURL = &quot;jdbc:sqlite:&quot; + dbName;
+
+    public void createDB() {
+<span class="nc" id="L18">        File dbFile = new File(dbName);</span>
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        if (dbFile.exists()) {</span>
+<span class="nc" id="L20">            System.out.println(&quot;Database already created&quot;);</span>
+<span class="nc" id="L21">            return;</span>
+        }
+<span class="nc" id="L23">        try (Connection ignored = DriverManager.getConnection(dbURL)) {</span>
+<span class="nc" id="L24">            System.out.println(&quot;A new database has been created.&quot;);</span>
+<span class="nc" id="L25">        } catch (SQLException e) {</span>
+<span class="nc" id="L26">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L27">            System.exit(-1);</span>
+<span class="nc" id="L28">        }</span>
+<span class="nc" id="L29">    }</span>
+
+    public void removeDB() {
+<span class="nc" id="L32">        File dbFile = new File(dbName);</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (dbFile.exists()) {</span>
+<span class="nc" id="L34">            boolean result = dbFile.delete();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (!result) {</span>
+<span class="nc" id="L36">                System.out.println(&quot;Couldn't delete existing db file&quot;);</span>
+<span class="nc" id="L37">                System.exit(-1);</span>
+            } else {
+<span class="nc" id="L39">                System.out.println(&quot;Removed existing DB file.&quot;);</span>
+            }
+<span class="nc" id="L41">        } else {</span>
+<span class="nc" id="L42">            System.out.println(&quot;No existing DB file.&quot;);</span>
+        }
+<span class="nc" id="L44">    }</span>
+
+    public void setupDB() {
+<span class="nc" id="L47">        String createTeamTableSQL =</span>
+                &quot;&quot;&quot;
+                CREATE TABLE IF NOT EXISTS TeamResults (
+                    id integer PRIMARY KEY,
+                    teamName TEXT,
+                    results TEXT
+                )
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L56">        String createMatchTableSQL =</span>
+                &quot;&quot;&quot;
+                CREATE TABLE IF NOT EXISTS MatchResults (
+                    id integer PRIMARY KEY,
+                    teamId TEXT,
+                    results TEXT
+                )
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L65">        String createAccountsTableSQL =</span>
+                &quot;&quot;&quot;
+                CREATE TABLE IF NOT EXISTS Accounts (
+                    id integer PRIMARY KEY,
+                    username TEXT,
+                    password TEXT,
+                    backgroundColor TEXT,
+                    textColor TEXT,
+                    buttonColor TEXT,
+                    highlightColor TEXT, 
+                    breadcrumb TEXT,
+                    breadcrumbIndex integer,
+                    callResult TEXT,
+                    currentTeamOrMatch
+                )
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L82">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L83">             Statement statement = conn.createStatement()) {</span>
+<span class="nc" id="L84">            statement.execute(createTeamTableSQL);</span>
+<span class="nc" id="L85">            statement.execute(createMatchTableSQL);</span>
+<span class="nc" id="L86">            statement.execute(createAccountsTableSQL);</span>
+
+<span class="nc" id="L88">        } catch (SQLException e) {</span>
+<span class="nc" id="L89">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L90">            System.exit(-1);</span>
+<span class="nc" id="L91">        }</span>
+<span class="nc" id="L92">    }</span>
+
+    public void saveTeamResult(String teamName, String results) {
+<span class="nc" id="L95">        String saveTR =</span>
+                &quot;&quot;&quot;
+                INSERT INTO TeamResults(teamName, results) VALUES
+                    (?, ?)
+                &quot;&quot;&quot;;
+<span class="nc" id="L100">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L101">             PreparedStatement preparedStatement = conn.prepareStatement(saveTR)) {</span>
+<span class="nc" id="L102">            preparedStatement.setString(1, teamName);</span>
+<span class="nc" id="L103">            preparedStatement.setString(2, results);</span>
+<span class="nc" id="L104">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L106">        } catch (SQLException e) {</span>
+<span class="nc" id="L107">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L108">            System.exit(-1);</span>
+<span class="nc" id="L109">        }</span>
+<span class="nc" id="L110">    }</span>
+
+    public void saveMatchResult(String teamId, String results) {
+<span class="nc" id="L113">        String saveMR =</span>
+                &quot;&quot;&quot;
+                INSERT INTO MatchResults(teamId, results) VALUES
+                    (?, ?)
+                &quot;&quot;&quot;;
+<span class="nc" id="L118">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L119">             PreparedStatement preparedStatement = conn.prepareStatement(saveMR)) {</span>
+<span class="nc" id="L120">            preparedStatement.setString(1, teamId);</span>
+<span class="nc" id="L121">            preparedStatement.setString(2, results);</span>
+
+<span class="nc" id="L123">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L125">        } catch (SQLException e) {</span>
+<span class="nc" id="L126">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L127">            System.exit(-1);</span>
+<span class="nc" id="L128">        }</span>
+<span class="nc" id="L129">    }</span>
+
+    public SimpleEntry&lt;CallResult, String&gt; queryTeam(String teamName) {
+<span class="nc" id="L132">        String queryTeam =</span>
+                &quot;&quot;&quot;
+                SELECT results
+                FROM TeamResults
+                WHERE teamName = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L139">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L140">             PreparedStatement preparedStatement = conn.prepareStatement(queryTeam)) {</span>
+<span class="nc" id="L141">            preparedStatement.setString(1, teamName);</span>
+
+<span class="nc" id="L143">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc" id="L145">            SimpleEntry&lt;CallResult, String&gt; data = null;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (results.next()) {</span>
+<span class="nc" id="L147">                data = new SimpleEntry&lt;&gt;(CallResult.CACHEHIT, results.getString(&quot;results&quot;));</span>
+            }
+
+<span class="nc" id="L150">            return data;</span>
+<span class="nc" id="L151">        } catch (SQLException e) {</span>
+<span class="nc" id="L152">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L153">            System.exit(-1);</span>
+        }
+<span class="nc" id="L155">        return null;</span>
+    }
+
+    public SimpleEntry&lt;CallResult, String&gt; queryMatch(String teamId) {
+<span class="nc" id="L159">        String queryMatch =</span>
+                &quot;&quot;&quot;
+                SELECT results
+                FROM MatchResults
+                WHERE teamId = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L166">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L167">             PreparedStatement preparedStatement = conn.prepareStatement(queryMatch)) {</span>
+<span class="nc" id="L168">            preparedStatement.setString(1, teamId);</span>
+
+<span class="nc" id="L170">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc" id="L172">            SimpleEntry&lt;CallResult, String&gt; data = null;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (results.next()) {</span>
+<span class="nc" id="L174">                data = new SimpleEntry&lt;&gt;(CallResult.CACHEHIT, results.getString(&quot;results&quot;));</span>
+            }
+
+<span class="nc" id="L177">            return data;</span>
+<span class="nc" id="L178">        } catch (SQLException e) {</span>
+<span class="nc" id="L179">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L180">            System.exit(-1);</span>
+        }
+<span class="nc" id="L182">        return null;</span>
+    }
+
+    public void updateTeam(String teamName, String results) {
+<span class="nc" id="L186">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE TeamResults
+                SET results = ?
+                WHERE teamName = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L192">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L193">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L194">            preparedStatement.setString(1, results);</span>
+<span class="nc" id="L195">            preparedStatement.setString(2, teamName);</span>
+
+<span class="nc" id="L197">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L199">        } catch (SQLException e) {</span>
+<span class="nc" id="L200">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L201">            System.exit(-1);</span>
+<span class="nc" id="L202">        }</span>
+<span class="nc" id="L203">    }</span>
+
+    public void updateMatch(String teamId, String results) {
+<span class="nc" id="L206">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE MatchResults
+                SET results = ?
+                WHERE teamId = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L212">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L213">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L214">            preparedStatement.setString(1, results);</span>
+<span class="nc" id="L215">            preparedStatement.setString(2, teamId);</span>
+
+<span class="nc" id="L217">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L219">        } catch (SQLException e) {</span>
+<span class="nc" id="L220">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L221">            System.exit(-1);</span>
+<span class="nc" id="L222">        }</span>
+<span class="nc" id="L223">    }</span>
+
+    // User account functions
+
+    public void addAccount(String username, String password) {
+<span class="nc" id="L228">        String addU =</span>
+                &quot;&quot;&quot;
+                INSERT INTO Accounts(username, password) VALUES
+                    (?, ?)
+                &quot;&quot;&quot;;
+<span class="nc" id="L233">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L234">             PreparedStatement preparedStatement = conn.prepareStatement(addU)) {</span>
+<span class="nc" id="L235">            preparedStatement.setString(1, username);</span>
+<span class="nc" id="L236">            preparedStatement.setString(2, password);</span>
+
+<span class="nc" id="L238">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L240">        } catch (SQLException e) {</span>
+<span class="nc" id="L241">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L242">            System.exit(-1);</span>
+<span class="nc" id="L243">        }</span>
+<span class="nc" id="L244">    }</span>
+
+
+    public boolean queryAccount(String username, String password) {
+<span class="nc" id="L248">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT *
+                FROM Accounts
+                WHERE username = ? AND password = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L255">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L256">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L257">            preparedStatement.setString(1, username);</span>
+<span class="nc" id="L258">            preparedStatement.setString(2, password);</span>
+
+<span class="nc" id="L260">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc" id="L262">            return results.next();</span>
+
+<span class="nc" id="L264">        } catch (SQLException e) {</span>
+<span class="nc" id="L265">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L266">            System.exit(-1);</span>
+        }
+<span class="nc" id="L268">        return false;</span>
+    }
+
+    public boolean queryUsername(String username) {
+<span class="nc" id="L272">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT *
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L279">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L280">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L281">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L283">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc" id="L285">            return results.next();</span>
+
+<span class="nc" id="L287">        } catch (SQLException e) {</span>
+<span class="nc" id="L288">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L289">            System.exit(-1);</span>
+        }
+<span class="nc" id="L291">        return false;</span>
+    }
+
+    // personalisation functions
+
+    public void updateBackgroundColor(String username, String color) {
+<span class="nc" id="L297">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET backgroundColor = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L303">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L304">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L305">            preparedStatement.setString(1, color);</span>
+<span class="nc" id="L306">            preparedStatement.setString(2, username);</span>
+
+<span class="nc" id="L308">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L310">        } catch (SQLException e) {</span>
+<span class="nc" id="L311">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L312">            System.exit(-1);</span>
+<span class="nc" id="L313">        }</span>
+<span class="nc" id="L314">    }</span>
+
+    public void updateTextColor(String username, String color) {
+<span class="nc" id="L317">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET textColor = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L323">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L324">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L325">            preparedStatement.setString(1, color);</span>
+<span class="nc" id="L326">            preparedStatement.setString(2, username);</span>
+
+<span class="nc" id="L328">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L330">        } catch (SQLException e) {</span>
+<span class="nc" id="L331">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L332">            System.exit(-1);</span>
+<span class="nc" id="L333">        }</span>
+<span class="nc" id="L334">    }</span>
+
+    public void updateButtonColor(String username, String color) {
+<span class="nc" id="L337">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET buttonColor = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L343">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L344">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L345">            preparedStatement.setString(1, color);</span>
+<span class="nc" id="L346">            preparedStatement.setString(2, username);</span>
+
+<span class="nc" id="L348">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L350">        } catch (SQLException e) {</span>
+<span class="nc" id="L351">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L352">            System.exit(-1);</span>
+<span class="nc" id="L353">        }</span>
+<span class="nc" id="L354">    }</span>
+
+    public void updateBreadcrumb(String username, String breadcrumb, int breadcrumbIndex) {
+<span class="nc" id="L357">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET breadcrumb = ?, breadcrumbIndex = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L363">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L364">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L365">            preparedStatement.setString(1, breadcrumb);</span>
+<span class="nc" id="L366">            preparedStatement.setInt(2, breadcrumbIndex);</span>
+<span class="nc" id="L367">            preparedStatement.setString(3, username);</span>
+
+<span class="nc" id="L369">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L371">        } catch (SQLException e) {</span>
+<span class="nc" id="L372">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L373">            System.exit(-1);</span>
+<span class="nc" id="L374">        }</span>
+<span class="nc" id="L375">    }</span>
+
+    public void updateCurrentTeamOrMatch(String username, String callResult, String currentTeamOrMatch) {
+<span class="nc" id="L378">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET callResult = ?, currentTeamOrMatch = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L384">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L385">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L386">            preparedStatement.setString(1, callResult);</span>
+<span class="nc" id="L387">            preparedStatement.setString(2, currentTeamOrMatch);</span>
+<span class="nc" id="L388">            preparedStatement.setString(3, username);</span>
+
+<span class="nc" id="L390">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L392">        } catch (SQLException e) {</span>
+<span class="nc" id="L393">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L394">            System.exit(-1);</span>
+<span class="nc" id="L395">        }</span>
+<span class="nc" id="L396">    }</span>
+
+    public String queryBreadcrumb(String username) {
+<span class="nc" id="L399">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT breadcrumb
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L406">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L407">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L408">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L410">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc bnc" id="L412" title="All 2 branches missed.">            if (results.next()){</span>
+<span class="nc" id="L413">                String breadcrumb = results.getString(&quot;breadcrumb&quot;);</span>
+<span class="nc" id="L414">                return breadcrumb;</span>
+            }
+            else{
+<span class="nc" id="L417">                return null;</span>
+            }
+
+<span class="nc bnc" id="L420" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L421">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L422">            System.exit(-1);</span>
+        }
+<span class="nc" id="L424">        return null;</span>
+    }
+
+    public Integer queryBreadcrumbIndex(String username) {
+<span class="nc" id="L428">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT breadcrumbIndex
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L435">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L436">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L437">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L439">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc bnc" id="L441" title="All 2 branches missed.">            if (results.next()){</span>
+<span class="nc" id="L442">                int breadcrumbIndex = results.getInt(&quot;breadcrumbIndex&quot;);</span>
+<span class="nc" id="L443">                return breadcrumbIndex;</span>
+            }
+            else{
+<span class="nc" id="L446">                return null;</span>
+            }
+
+<span class="nc bnc" id="L449" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L450">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L451">            System.exit(-1);</span>
+        }
+<span class="nc" id="L453">        return null;</span>
+    }
+
+    public SimpleEntry&lt;String, String&gt; queryCall(String username) {
+<span class="nc" id="L457">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT callResult, currentTeamOrMatch
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L464">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L465">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L466">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L468">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc bnc" id="L470" title="All 2 branches missed.">            if (results.next()){</span>
+<span class="nc" id="L471">                SimpleEntry&lt;String, String&gt; result = new SimpleEntry&lt;&gt;(results.getString(&quot;callResult&quot;), results.getString(&quot;currentTeamOrMatch&quot;));</span>
+<span class="nc" id="L472">                return result;</span>
+            }
+            else{
+<span class="nc" id="L475">                return null;</span>
+            }
+
+<span class="nc bnc" id="L478" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L479">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L480">            System.exit(-1);</span>
+        }
+<span class="nc" id="L482">        return null;</span>
+    }
+
+    public String queryComponentColor(String username, String component) {
+<span class="nc" id="L486">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT *
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L493">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L494">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L495">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L497">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc bnc" id="L499" title="All 2 branches missed.">            if (results.next()){</span>
+<span class="nc" id="L500">                String colorString = results.getString(component);</span>
+<span class="nc" id="L501">                return colorString;</span>
+            }
+            else{
+<span class="nc" id="L504">                return null;</span>
+            }
+
+<span class="nc bnc" id="L507" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L508">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L509">            System.exit(-1);</span>
+        }
+<span class="nc" id="L511">        return null;</span>
+    }
+
+    public String queryHighlightColors(String username) {
+<span class="nc" id="L515">        String qs =</span>
+                &quot;&quot;&quot;
+                SELECT highlightColor
+                FROM Accounts
+                WHERE username = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L522">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L523">             PreparedStatement preparedStatement = conn.prepareStatement(qs)) {</span>
+<span class="nc" id="L524">            preparedStatement.setString(1, username);</span>
+
+<span class="nc" id="L526">            ResultSet results = preparedStatement.executeQuery();</span>
+
+<span class="nc bnc" id="L528" title="All 2 branches missed.">            if (results.next()){</span>
+<span class="nc" id="L529">                String colorString = results.getString(&quot;highlightColor&quot;);</span>
+<span class="nc" id="L530">                return colorString;</span>
+            }
+            else{
+<span class="nc" id="L533">                return null;</span>
+            }
+
+<span class="nc bnc" id="L536" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L537">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L538">            System.exit(-1);</span>
+        }
+<span class="nc" id="L540">        return null;</span>
+    }
+
+    public void clearCache() {
+<span class="nc" id="L544">        String dropTeam =</span>
+                &quot;&quot;&quot;
+                DROP TABLE TeamResults;
+                &quot;&quot;&quot;;
+<span class="nc" id="L548">        String dropMatch =</span>
+                &quot;&quot;&quot;
+                DROP TABLE MatchResults;
+                &quot;&quot;&quot;;
+<span class="nc" id="L552">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L553">             Statement statement = conn.createStatement()) {</span>
+<span class="nc" id="L554">            statement.execute(dropTeam);</span>
+<span class="nc" id="L555">            statement.execute(dropMatch);</span>
+<span class="nc" id="L556">        } catch (SQLException e) {</span>
+<span class="nc" id="L557">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L558">            System.exit(-1);</span>
+<span class="nc" id="L559">        }</span>
+<span class="nc" id="L560">        setupDB();</span>
+<span class="nc" id="L561">    }</span>
+
+    public void updateHighlightColors(String currentUser, String colorString) {
+<span class="nc" id="L564">        String addS =</span>
+                &quot;&quot;&quot;
+                UPDATE Accounts
+                SET highlightColor = ?
+                WHERE username = ?
+                &quot;&quot;&quot;;
+<span class="nc" id="L570">        try (Connection conn = DriverManager.getConnection(dbURL);</span>
+<span class="nc" id="L571">             PreparedStatement preparedStatement = conn.prepareStatement(addS)) {</span>
+<span class="nc" id="L572">            preparedStatement.setString(1, colorString);</span>
+<span class="nc" id="L573">            preparedStatement.setString(2, currentUser);</span>
+
+<span class="nc" id="L575">            preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L577">        } catch (SQLException e) {</span>
+<span class="nc" id="L578">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L579">            System.exit(-1);</span>
+<span class="nc" id="L580">        }</span>
+<span class="nc" id="L581">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

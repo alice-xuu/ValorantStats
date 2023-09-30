@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WitAiApiCallsImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.apicalls</a> &gt; <span class="el_source">WitAiApiCallsImpl.java</span></div><h1>WitAiApiCallsImpl.java</h1><pre class="source lang-java linenums">package valorantstats.model.apicalls;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+/** Sends requests to Wit.Ai api and returns an ApiResponse object */
+public class WitAiApiCallsImpl implements WitAiApiCalls {
+
+  String witClientKey;
+  String witServerKey;
+
+<span class="fc" id="L16">  public WitAiApiCallsImpl() {</span>
+<span class="fc" id="L17">    this.witClientKey = System.getenv(&quot;WIT_CLIENT_KEY&quot;);</span>
+<span class="fc" id="L18">    this.witServerKey = System.getenv(&quot;WIT_SERVER_KEY&quot;);</span>
+<span class="fc" id="L19">  }</span>
+
+  @Override
+  public ApiResponse getRequestMessage(String input) {
+    try {
+<span class="nc" id="L24">      String formatted = input.replaceAll(&quot;\\s+&quot;, &quot;%20&quot;);</span>
+
+<span class="nc" id="L26">      String uri = &quot;https://api.wit.ai/message?v=20220503&amp;q=&quot; + formatted;</span>
+
+<span class="nc" id="L28">      HttpRequest request =</span>
+<span class="nc" id="L29">          HttpRequest.newBuilder(new URI(uri))</span>
+<span class="nc" id="L30">              .GET()</span>
+<span class="nc" id="L31">              .header(&quot;Accept&quot;, &quot;application/json&quot;)</span>
+<span class="nc" id="L32">              .header(&quot;Authorization&quot;, &quot;Bearer &quot; + witServerKey)</span>
+<span class="nc" id="L33">              .build();</span>
+
+<span class="nc" id="L35">      HttpClient client = HttpClient.newBuilder().build();</span>
+<span class="nc" id="L36">      HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
+
+<span class="nc" id="L38">      ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());</span>
+
+<span class="nc" id="L40">      return apiResponse;</span>
+
+<span class="nc" id="L42">    } catch (IOException | InterruptedException e) {</span>
+<span class="nc" id="L43">      System.out.println(e.getMessage());</span>
+<span class="nc" id="L44">    } catch (URISyntaxException ignored) {</span>
+<span class="nc" id="L45">    }</span>
+<span class="nc" id="L46">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

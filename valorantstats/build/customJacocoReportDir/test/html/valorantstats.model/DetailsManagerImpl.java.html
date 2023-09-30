@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DetailsManagerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model</a> &gt; <span class="el_source">DetailsManagerImpl.java</span></div><h1>DetailsManagerImpl.java</h1><pre class="source lang-java linenums">package valorantstats.model;
+
+import valorantstats.model.enums.CallResult;
+import valorantstats.model.enums.SearchType;
+
+import java.util.*;
+
+/** Implementation of detail manager to manage the application history and details */
+public class DetailsManagerImpl implements DetailsManager {
+<span class="fc" id="L10">  private static final Object lockObject = new Object();</span>
+  private final String appName;
+  private final String name;
+  private final String references;
+  private final Set&lt;ModelObserver&gt; observers;
+  private List&lt;HistoryItem&gt; history;
+<span class="fc" id="L16">  private int historyIndex = 0;</span>
+  private boolean fastMode;
+
+<span class="fc" id="L19">  public DetailsManagerImpl() {</span>
+<span class="fc" id="L20">    this.history = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">    observers = new HashSet&lt;&gt;();</span>
+
+<span class="fc" id="L23">    this.appName = &quot;Pandascore - Valorant&quot;;</span>
+<span class="fc" id="L24">    this.name = &quot;Alice&quot;;</span>
+<span class="fc" id="L25">    this.references =</span>
+        &quot;splash image: https://playvalorant.com/en-us/media/\narrow: https://all-free-download.com/free-icon/right-arrow-jpg.html&quot;;
+
+<span class="fc" id="L28">    fastMode = false;</span>
+<span class="fc" id="L29">  }</span>
+
+  @Override
+  public List&lt;HistoryItem&gt; getHistory() {
+<span class="fc" id="L33">    return history;</span>
+  }
+
+  @Override
+  public void setHistory(List&lt;HistoryItem&gt; history) {
+<span class="fc" id="L38">    this.history = history;</span>
+<span class="fc" id="L39">    updateObserversBackend();</span>
+<span class="fc" id="L40">  }</span>
+
+  @Override
+  public void addHistory(
+      SearchType call,
+      String searchedItem,
+      AbstractMap.SimpleEntry&lt;CallResult, String&gt; searchResult) {
+<span class="fc" id="L47">    HistoryItem historyItem = new HistoryItem(call, searchedItem, searchResult);</span>
+<span class="fc" id="L48">    synchronized (lockObject) {</span>
+<span class="fc" id="L49">      this.history.add(historyItem);</span>
+<span class="fc" id="L50">      setCurrentHistoryIndex(getHistory().size() - 1);</span>
+<span class="fc" id="L51">    }</span>
+<span class="fc" id="L52">    updateObserversBackend();</span>
+<span class="fc" id="L53">  }</span>
+
+  @Override
+  public void addObserverBackend(ModelObserver observer) {
+<span class="nc" id="L57">    this.observers.add(observer);</span>
+<span class="nc" id="L58">  }</span>
+
+  @Override
+  public Set&lt;ModelObserver&gt; getObserversBackend() {
+<span class="nc" id="L62">    return observers;</span>
+  }
+
+  @Override
+  public void updateObserversBackend() {
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    for (ModelObserver observer : observers) {</span>
+<span class="nc" id="L68">      observer.update();</span>
+<span class="nc" id="L69">    }</span>
+<span class="fc" id="L70">  }</span>
+
+  @Override
+  public String shortFormReportString() {
+<span class="fc" id="L74">    StringBuilder report = new StringBuilder();</span>
+<span class="fc" id="L75">    List&lt;HistoryItem&gt; historyList = getHistory();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">    for (int i = 0; i &lt; historyList.size(); i++) {</span>
+<span class="fc" id="L77">      HistoryItem historyItem = historyList.get(i);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">      if (i != 0) {</span>
+<span class="fc" id="L79">        report.append(&quot;, &quot;);</span>
+      }
+<span class="fc" id="L81">      report.append(historyItem.getSearchType()).append(&quot;:&quot;).append(historyItem.getSearchedItem());</span>
+    }
+<span class="fc" id="L83">    return String.valueOf(report);</span>
+  }
+
+  @Override
+  public String breadCrumbString() {
+<span class="fc" id="L88">    StringBuilder report = new StringBuilder();</span>
+<span class="fc" id="L89">    List&lt;HistoryItem&gt; historyList = getHistory();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">    for (int i = 0; i &lt; historyList.size(); i++) {</span>
+<span class="fc" id="L91">      HistoryItem historyItem = historyList.get(i);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">      if (i != 0) {</span>
+<span class="fc" id="L93">        report.append(&quot;---&quot;);</span>
+      }
+<span class="fc" id="L95">      report</span>
+<span class="fc" id="L96">          .append(historyItem.getSearchType())</span>
+<span class="fc" id="L97">          .append(&quot;--&quot;)</span>
+<span class="fc" id="L98">          .append(historyItem.getSearchedItem())</span>
+<span class="fc" id="L99">          .append(&quot;--&quot;)</span>
+<span class="fc" id="L100">          .append(historyItem.getSearchResult().getKey())</span>
+<span class="fc" id="L101">          .append(&quot;--&quot;)</span>
+<span class="fc" id="L102">          .append(historyItem.getSearchResult().getValue());</span>
+    }
+<span class="fc" id="L104">    return String.valueOf(report);</span>
+  }
+
+  @Override
+  public String getAppName() {
+<span class="fc" id="L109">    return appName;</span>
+  }
+
+  @Override
+  public String getName() {
+<span class="fc" id="L114">    return name;</span>
+  }
+
+  @Override
+  public String getReferences() {
+<span class="fc" id="L119">    return references;</span>
+  }
+
+  @Override
+  public HistoryItem getBackHistory() {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">    if (getHistory().size() == 0) {</span>
+<span class="fc" id="L125">      return null;</span>
+    }
+<span class="fc" id="L127">    int index = getCurrentHistoryIndex();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">    if (index - 1 &lt; 0) {</span>
+<span class="fc" id="L129">      return getHistory().get(0);</span>
+    } else {
+<span class="fc" id="L131">      index -= 1;</span>
+<span class="fc" id="L132">      setCurrentHistoryIndex(index);</span>
+<span class="fc" id="L133">      return getHistory().get(index);</span>
+    }
+  }
+
+  @Override
+  public int getCurrentHistoryIndex() {
+<span class="fc" id="L139">    return historyIndex;</span>
+  }
+
+  @Override
+  public void setCurrentHistoryIndex(int historyIndex) {
+<span class="fc" id="L144">    this.historyIndex = historyIndex;</span>
+<span class="fc" id="L145">  }</span>
+
+  @Override
+  public boolean getFastMode() {
+<span class="fc" id="L149">    return fastMode;</span>
+  }
+
+  @Override
+  public void setFastMode(boolean selected) {
+<span class="fc" id="L154">    fastMode = selected;</span>
+<span class="fc" id="L155">    updateObserversBackend();</span>
+<span class="fc" id="L156">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

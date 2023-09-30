@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DisplayImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.view</a> &gt; <span class="el_source">DisplayImpl.java</span></div><h1>DisplayImpl.java</h1><pre class="source lang-java linenums">package valorantstats.view;
+
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import valorantstats.model.HistoryItem;
+import valorantstats.presenter.DisplayPresenterImpl;
+import org.controlsfx.control.ToggleSwitch;
+
+import java.awt.image.BufferedImage;
+import java.util.List;
+
+/** Manages the main view of the application */
+public class DisplayImpl implements Display {
+
+  private final BorderPane mainPane;
+  private final ScrollPane scrollPane;
+  private final SplashPage splashPage;
+  private final LoginPage loginPage;
+  private final PersonalisationPageImpl personalisationPage;
+  private final WitDisplay witDisplay;
+  private final String textStyle;
+  private SearchPage searchPage;
+
+  private Scene scene;
+  private GridPane homePane;
+  private GridPane uploadImagePane;
+  private GridPane aboutPane;
+  private GridPane menuBar;
+<span class="nc" id="L37">  private FlowPane bcb = new FlowPane();</span>
+<span class="nc" id="L38">  private int width = 640;</span>
+<span class="nc" id="L39">  private int height = 480;</span>
+  private Button btnUploadImage;
+  private DisplayPresenterImpl displayPresenter;
+  private Image imgHistoryArrow;
+  private ToggleSwitch toggleSwitchFastMode;
+
+  public DisplayImpl(
+      SplashPage splashPage,
+      LoginPage loginPage,
+      PersonalisationPageImpl personalisationPage,
+      SearchPage searchPage,
+<span class="nc" id="L50">      WitDisplay witDisplay) {</span>
+
+<span class="nc" id="L52">    this.mainPane = new BorderPane();</span>
+<span class="nc" id="L53">    this.scrollPane = new ScrollPane();</span>
+<span class="nc" id="L54">    mainPane.setMinHeight(480);</span>
+
+<span class="nc" id="L56">    scrollPane.setContent(mainPane);</span>
+<span class="nc" id="L57">    scrollPane.setFitToWidth(true);</span>
+    // scrollPane.setFitToHeight(true);
+
+<span class="nc" id="L60">    this.splashPage = splashPage;</span>
+<span class="nc" id="L61">    this.loginPage = loginPage;</span>
+<span class="nc" id="L62">    this.personalisationPage = personalisationPage;</span>
+<span class="nc" id="L63">    this.searchPage = searchPage;</span>
+
+<span class="nc" id="L65">    this.witDisplay = witDisplay;</span>
+
+<span class="nc" id="L67">    buildMenu();</span>
+<span class="nc" id="L68">    buildBreadCrumbBar();</span>
+<span class="nc" id="L69">    buildHomePane();</span>
+
+<span class="nc" id="L71">    mainPane.setStyle(</span>
+        &quot;-fx-background-color: #364966;&quot;
+            + &quot;-fx-base: #dc3d4b;&quot;
+            + &quot;-fx-text-background-color: #ffffff;&quot;
+            + &quot;-fx-font-size: 16;&quot;
+            + &quot;-fx-font-family: Arial;&quot;);
+
+<span class="nc" id="L78">    this.textStyle = &quot;-fx-font-size: 16;&quot; + &quot;-fx-font-family: Arial;&quot;;</span>
+
+<span class="nc" id="L80">    imgHistoryArrow = new Image(&quot;Arrow-right.png&quot;, 15, 15, false, false, true);</span>
+<span class="nc" id="L81">  }</span>
+
+  @Override
+  public void displayScene() {
+<span class="nc" id="L85">    this.scene = new Scene(scrollPane, width, height);</span>
+<span class="nc" id="L86">  }</span>
+
+  @Override
+  public void setDisplayPresenter(DisplayPresenterImpl displayPresenter) {
+<span class="nc" id="L90">    this.displayPresenter = displayPresenter;</span>
+<span class="nc" id="L91">  }</span>
+
+  @Override
+  public void showSplashPage() {
+<span class="nc" id="L95">    mainPane.getChildren().clear();</span>
+<span class="nc" id="L96">    mainPane.setCenter(splashPage.getPane());</span>
+<span class="nc" id="L97">    splashPage.display();</span>
+<span class="nc" id="L98">    splashPage.startTimeline();</span>
+<span class="nc" id="L99">  }</span>
+
+  @Override
+  public void showLoginPage() {
+<span class="nc" id="L103">    mainPane.getChildren().clear();</span>
+<span class="nc" id="L104">    mainPane.setCenter(loginPage.getMainLoginPane());</span>
+<span class="nc" id="L105">  }</span>
+
+  @Override
+  public void buildMenu() {
+<span class="nc" id="L109">    Menu home = new Menu(&quot;Home&quot;);</span>
+<span class="nc" id="L110">    MenuItem homeItm = new MenuItem(&quot;Home&quot;);</span>
+<span class="nc" id="L111">    homeItm.setOnAction((event) -&gt; displayPresenter.showHomePage());</span>
+<span class="nc" id="L112">    MenuItem aboutItm = new MenuItem(&quot;About&quot;);</span>
+<span class="nc" id="L113">    aboutItm.setOnAction((event) -&gt; displayPresenter.showAboutPage());</span>
+
+<span class="nc" id="L115">    MenuItem personaliseItm = new MenuItem(&quot;Personalise&quot;);</span>
+<span class="nc" id="L116">    personaliseItm.setOnAction((event) -&gt; displayPresenter.showPersonalisationPage());</span>
+
+<span class="nc" id="L118">    home.getItems().addAll(homeItm, aboutItm, personaliseItm);</span>
+
+<span class="nc" id="L120">    Menu search = new Menu(&quot;Search&quot;);</span>
+<span class="nc" id="L121">    MenuItem searchTeamItm = new MenuItem(&quot;Search team&quot;);</span>
+<span class="nc" id="L122">    searchTeamItm.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L124">          displayPresenter.showSearchPage();</span>
+<span class="nc" id="L125">        });</span>
+
+<span class="nc" id="L127">    search.getItems().addAll(searchTeamItm);</span>
+
+<span class="nc" id="L129">    Menu fastMode = new Menu(&quot;Fast Mode&quot;);</span>
+<span class="nc" id="L130">    MenuItem fastModeOnItm = new MenuItem(&quot;Turn On&quot;);</span>
+<span class="nc" id="L131">    fastModeOnItm.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L133">          displayPresenter.setFastMode(true, false);</span>
+<span class="nc" id="L134">        });</span>
+
+<span class="nc" id="L136">    MenuItem fastModeOffItm = new MenuItem(&quot;Turn Off&quot;);</span>
+<span class="nc" id="L137">    fastModeOffItm.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L139">          displayPresenter.setFastMode(false, false);</span>
+<span class="nc" id="L140">        });</span>
+
+<span class="nc" id="L142">    fastMode.getItems().addAll(fastModeOnItm, fastModeOffItm);</span>
+
+<span class="nc" id="L144">    MenuBar menuBar = new MenuBar();</span>
+<span class="nc" id="L145">    menuBar.getMenus().addAll(home, search, fastMode);</span>
+
+<span class="nc" id="L147">    buildTopBarMenu(menuBar);</span>
+<span class="nc" id="L148">  }</span>
+
+  @Override
+  public void buildTopBarMenu(MenuBar menuBar) {
+<span class="nc" id="L152">    toggleSwitchFastMode = new ToggleSwitch();</span>
+<span class="nc" id="L153">    toggleSwitchFastMode.setText(&quot;Fast Mode: Off&quot;);</span>
+<span class="nc" id="L154">    toggleSwitchFastMode.setOnMousePressed(</span>
+        (event -&gt; {
+<span class="nc bnc" id="L156" title="All 2 branches missed.">          displayPresenter.setFastMode(!toggleSwitchFastMode.isSelected(), true);</span>
+<span class="nc" id="L157">        }));</span>
+
+<span class="nc" id="L159">    this.menuBar = new GridPane();</span>
+<span class="nc" id="L160">    this.menuBar.setHgap(10);</span>
+<span class="nc" id="L161">    ColumnConstraints col0 = new ColumnConstraints();</span>
+<span class="nc" id="L162">    col0.setHgrow(Priority.ALWAYS);</span>
+<span class="nc" id="L163">    this.menuBar.getColumnConstraints().add(col0);</span>
+
+<span class="nc" id="L165">    this.menuBar.getChildren().addAll(menuBar, toggleSwitchFastMode);</span>
+
+<span class="nc" id="L167">    GridPane.setColumnIndex(menuBar, 0);</span>
+<span class="nc" id="L168">    GridPane.setColumnIndex(toggleSwitchFastMode, 1);</span>
+<span class="nc" id="L169">  }</span>
+
+  @Override
+  public void setSearchPage(SearchPage searchPage) {
+<span class="nc" id="L173">    this.searchPage = searchPage;</span>
+<span class="nc" id="L174">  }</span>
+
+  @Override
+  public void updateFastModeSwitch(String text, boolean mode, boolean isSwitch) {
+<span class="nc" id="L178">    this.toggleSwitchFastMode.setText(text);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    if (!isSwitch) {</span>
+<span class="nc" id="L180">      this.toggleSwitchFastMode.setSelected(mode);</span>
+    }
+<span class="nc" id="L182">  }</span>
+
+  @Override
+  public void buildBreadCrumbBar() {
+<span class="nc" id="L186">    bcb = new FlowPane();</span>
+<span class="nc" id="L187">  }</span>
+
+  @Override
+  public void buildHomePane() {
+<span class="nc" id="L191">    homePane = new GridPane();</span>
+<span class="nc" id="L192">    homePane.setVgap(20);</span>
+<span class="nc" id="L193">    homePane.setHgap(20);</span>
+<span class="nc" id="L194">    homePane.setPadding(new Insets(20));</span>
+<span class="nc" id="L195">    ColumnConstraints col1 = new ColumnConstraints();</span>
+<span class="nc" id="L196">    col1.setPercentWidth(100);</span>
+<span class="nc" id="L197">    homePane.getColumnConstraints().addAll(col1);</span>
+
+<span class="nc" id="L199">    Label lblHome = new Label(&quot;Home&quot;);</span>
+<span class="nc" id="L200">    Font font2 = Font.font(&quot;Arial&quot;, FontWeight.NORMAL, 20);</span>
+<span class="nc" id="L201">    lblHome.setFont(font2);</span>
+<span class="nc" id="L202">    GridPane.setFillWidth(lblHome, true);</span>
+<span class="nc" id="L203">    lblHome.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L204">    lblHome.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L206">    homePane.addRow(0, lblHome);</span>
+<span class="nc" id="L207">    uploadImagePane = new GridPane();</span>
+<span class="nc" id="L208">    uploadImagePane.setVgap(20);</span>
+<span class="nc" id="L209">    homePane.addRow(1, uploadImagePane);</span>
+<span class="nc" id="L210">  }</span>
+
+  @Override
+  public void buildUploadImagePane() {
+<span class="nc" id="L214">    uploadImagePane.getChildren().clear();</span>
+
+<span class="nc" id="L216">    Label lblUpload =</span>
+        new Label(
+            &quot;Create a QR Code out of your team and match history and upload it to Imgur (Option will be disabled while you have no history)&quot;);
+<span class="nc" id="L219">    lblUpload.setWrapText(true);</span>
+
+<span class="nc" id="L221">    btnUploadImage = new Button(&quot;Upload QR Code&quot;);</span>
+<span class="nc" id="L222">    uploadImagePane.addRow(1, lblUpload);</span>
+<span class="nc" id="L223">    uploadImagePane.addRow(2, btnUploadImage);</span>
+<span class="nc" id="L224">    btnUploadImage.setOnAction((event) -&gt; displayPresenter.uploadImageAction());</span>
+<span class="nc" id="L225">  }</span>
+
+  @Override
+  public void setDisableUploadImageButton(boolean disable) {
+<span class="nc" id="L229">    btnUploadImage.setDisable(disable);</span>
+<span class="nc" id="L230">  }</span>
+
+  @Override
+  public void displayUploadImageError(String report, BufferedImage bi, String errorMsg) {
+<span class="nc" id="L234">    Label lblShortReportResult = new Label(report);</span>
+<span class="nc" id="L235">    lblShortReportResult.setWrapText(true);</span>
+
+<span class="nc" id="L237">    ImageView imgViewQR = new ImageView();</span>
+<span class="nc" id="L238">    imgViewQR.setImage(SwingFXUtils.toFXImage(bi, null));</span>
+<span class="nc" id="L239">    Label postResult = new Label(errorMsg);</span>
+<span class="nc" id="L240">    VBox vBox = new VBox(lblShortReportResult, imgViewQR, postResult);</span>
+<span class="nc" id="L241">    vBox.setSpacing(10);</span>
+<span class="nc" id="L242">    uploadImagePane.addRow(3, vBox);</span>
+<span class="nc" id="L243">  }</span>
+
+  @Override
+  public void displayUploadImageSuccess(String report, BufferedImage bi, String link) {
+<span class="nc" id="L247">    Label lblShortReportResult = new Label(report);</span>
+<span class="nc" id="L248">    lblShortReportResult.setWrapText(true);</span>
+<span class="nc" id="L249">    lblShortReportResult.setPrefWidth(getWidth());</span>
+
+<span class="nc" id="L251">    ImageView imgViewQR = new ImageView();</span>
+<span class="nc" id="L252">    imgViewQR.setImage(SwingFXUtils.toFXImage(bi, null));</span>
+<span class="nc" id="L253">    Label postResult = new Label(&quot;Upload successful&quot;);</span>
+<span class="nc" id="L254">    TextField tfImgurLink = new TextField(link);</span>
+<span class="nc" id="L255">    tfImgurLink.setVisible(true);</span>
+<span class="nc" id="L256">    VBox vBox = new VBox(lblShortReportResult, imgViewQR, postResult, tfImgurLink);</span>
+<span class="nc" id="L257">    vBox.setSpacing(10);</span>
+<span class="nc" id="L258">    uploadImagePane.addRow(3, vBox);</span>
+<span class="nc" id="L259">  }</span>
+
+  @Override
+  public void buildAboutPane(String appName, String name, String references) {
+<span class="nc" id="L263">    aboutPane = new GridPane();</span>
+<span class="nc" id="L264">    aboutPane.setVgap(20);</span>
+<span class="nc" id="L265">    aboutPane.setHgap(20);</span>
+<span class="nc" id="L266">    aboutPane.setPadding(new Insets(20));</span>
+<span class="nc" id="L267">    ColumnConstraints col1 = new ColumnConstraints();</span>
+<span class="nc" id="L268">    col1.setPercentWidth(100);</span>
+<span class="nc" id="L269">    aboutPane.getColumnConstraints().addAll(col1);</span>
+
+<span class="nc" id="L271">    Label lblAbout = new Label(&quot;About&quot;);</span>
+<span class="nc" id="L272">    Font font2 = Font.font(&quot;Arial&quot;, FontWeight.NORMAL, 20);</span>
+<span class="nc" id="L273">    lblAbout.setFont(font2);</span>
+<span class="nc" id="L274">    GridPane.setFillWidth(lblAbout, true);</span>
+<span class="nc" id="L275">    lblAbout.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L276">    lblAbout.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L278">    Label lblAppName = new Label(&quot;Application name: &quot; + appName);</span>
+<span class="nc" id="L279">    Label lblName = new Label(&quot;Name: &quot; + name);</span>
+<span class="nc" id="L280">    Label lblReferences = new Label(&quot;References: \n&quot; + references);</span>
+<span class="nc" id="L281">    lblReferences.setWrapText(true);</span>
+
+<span class="nc" id="L283">    aboutPane.addRow(0, lblAbout);</span>
+<span class="nc" id="L284">    aboutPane.addRow(1, lblAppName);</span>
+<span class="nc" id="L285">    aboutPane.addRow(2, lblName);</span>
+<span class="nc" id="L286">    aboutPane.addRow(3, lblReferences);</span>
+<span class="nc" id="L287">  }</span>
+
+  @Override
+  public void activateBtnUploadImage() {
+<span class="nc" id="L291">    btnUploadImage.fire();</span>
+<span class="nc" id="L292">  }</span>
+
+  /** Updates the breadcrumb bar and colors */
+  @Override
+  public void update(List&lt;HistoryItem&gt; historyList, String colorString) {
+
+<span class="nc" id="L298">    bcb.getChildren().clear();</span>
+
+<span class="nc bnc" id="L300" title="All 2 branches missed.">    if (historyList.size() &gt; 1) {</span>
+<span class="nc" id="L301">      Button buttonBack = new Button(&quot;Back&quot;);</span>
+<span class="nc" id="L302">      bcb.getChildren().add(buttonBack);</span>
+<span class="nc" id="L303">      buttonBack.setOnAction((event) -&gt; displayPresenter.goBackAction());</span>
+    }
+<span class="nc bnc" id="L305" title="All 2 branches missed.">    for (int i = 0; i &lt; historyList.size(); i++) {</span>
+<span class="nc" id="L306">      HistoryItem historyItem = historyList.get(i);</span>
+<span class="nc" id="L307">      Button buttonHistoryItem = new Button(historyItem.getSearchedItem());</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">      if (i != 0) {</span>
+<span class="nc" id="L309">        ImageView imgViewHistoryArrow = new ImageView(imgHistoryArrow);</span>
+<span class="nc" id="L310">        bcb.getChildren().addAll(imgViewHistoryArrow, buttonHistoryItem);</span>
+<span class="nc" id="L311">      } else {</span>
+<span class="nc" id="L312">        bcb.getChildren().addAll(buttonHistoryItem);</span>
+      }
+
+<span class="nc" id="L315">      int finalIndex = i;</span>
+<span class="nc" id="L316">      buttonHistoryItem.setOnAction(</span>
+<span class="nc" id="L317">          (event) -&gt; displayPresenter.breadcrumbClickAction(historyItem, finalIndex));</span>
+    }
+
+<span class="nc" id="L320">    mainPane.setStyle(colorString + textStyle);</span>
+<span class="nc" id="L321">  }</span>
+
+  @Override
+  public void homeAction() {
+<span class="nc" id="L325">    buildHomePane();</span>
+
+<span class="nc" id="L327">    mainPane.getChildren().clear();</span>
+<span class="nc" id="L328">    VBox vBoxMenuBcb = new VBox(menuBar, bcb);</span>
+<span class="nc" id="L329">    mainPane.setTop(vBoxMenuBcb);</span>
+<span class="nc" id="L330">    mainPane.setCenter(homePane);</span>
+<span class="nc" id="L331">    mainPane.setBottom(witDisplay.getWitDisplay());</span>
+<span class="nc" id="L332">  }</span>
+
+  @Override
+  public void aboutAction() {
+<span class="nc" id="L336">    mainPane.getChildren().clear();</span>
+<span class="nc" id="L337">    VBox vBoxMenuBcb = new VBox(menuBar, bcb);</span>
+<span class="nc" id="L338">    mainPane.setTop(vBoxMenuBcb);</span>
+<span class="nc" id="L339">    mainPane.setCenter(aboutPane);</span>
+<span class="nc" id="L340">    mainPane.setBottom(witDisplay.getWitDisplay());</span>
+<span class="nc" id="L341">  }</span>
+
+  @Override
+  public void searchTeamAction() {
+<span class="nc" id="L345">    mainPane.getChildren().clear();</span>
+    // searchPage.clearPane();
+<span class="nc" id="L347">    VBox vBoxMenuBcb = new VBox(menuBar, bcb);</span>
+<span class="nc" id="L348">    mainPane.setTop(vBoxMenuBcb);</span>
+<span class="nc" id="L349">    mainPane.setCenter(searchPage.getSearchPane());</span>
+<span class="nc" id="L350">    mainPane.setBottom(witDisplay.getWitDisplay());</span>
+<span class="nc" id="L351">  }</span>
+
+  @Override
+  public void personalisationAction() {
+<span class="nc" id="L355">    mainPane.getChildren().clear();</span>
+<span class="nc" id="L356">    VBox vBoxMenuBcb = new VBox(menuBar, bcb);</span>
+<span class="nc" id="L357">    mainPane.setTop(vBoxMenuBcb);</span>
+<span class="nc" id="L358">    mainPane.setCenter(personalisationPage.getPersonalisationPage());</span>
+<span class="nc" id="L359">    mainPane.setBottom(witDisplay.getWitDisplay());</span>
+<span class="nc" id="L360">  }</span>
+
+  @Override
+  public Scene getScene() {
+<span class="nc" id="L364">    return this.scene;</span>
+  }
+
+  @Override
+  public int getWidth() {
+<span class="nc" id="L369">    return width;</span>
+  }
+
+  @Override
+  public BorderPane getMainPane() {
+<span class="nc" id="L374">    return mainPane;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

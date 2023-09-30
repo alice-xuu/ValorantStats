@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutputApiCallsOnline.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.apicalls</a> &gt; <span class="el_source">OutputApiCallsOnline.java</span></div><h1>OutputApiCallsOnline.java</h1><pre class="source lang-java linenums">package valorantstats.model.apicalls;
+
+import com.google.gson.Gson;
+import valorantstats.model.apicalls.dummy.OutputDummyApi;
+import valorantstats.model.jsonobjects.PostImgurImage;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+/** Sends requests to a real imgur api when the output Api is specified as online */
+public class OutputApiCallsOnline implements OutputApiCalls {
+
+<span class="fc" id="L17">  public OutputApiCallsOnline() {}</span>
+
+  @Override
+  public ApiResponse postRequestImgurShortForm(String img) {
+    try {
+
+<span class="nc" id="L23">      String uri = &quot;https://api.imgur.com/3/upload&quot;;</span>
+<span class="nc" id="L24">      PostImgurImage post = new PostImgurImage(img, &quot;base64&quot;);</span>
+<span class="nc" id="L25">      Gson gson = new Gson();</span>
+<span class="nc" id="L26">      String postJSON = gson.toJson(post);</span>
+<span class="nc" id="L27">      HttpRequest request =</span>
+<span class="nc" id="L28">          HttpRequest.newBuilder(new URI(uri))</span>
+<span class="nc" id="L29">              .header(&quot;Authorization&quot;, &quot;Client-ID &quot; + System.getenv(&quot;IMGUR_API_KEY&quot;))</span>
+<span class="nc" id="L30">              .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
+<span class="nc" id="L31">              .POST(HttpRequest.BodyPublishers.ofString(postJSON))</span>
+<span class="nc" id="L32">              .build();</span>
+
+<span class="nc" id="L34">      HttpClient client = HttpClient.newBuilder().build();</span>
+<span class="nc" id="L35">      HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
+
+<span class="nc" id="L37">      ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());</span>
+<span class="nc" id="L38">      return apiResponse;</span>
+
+<span class="nc" id="L40">    } catch (IOException | InterruptedException e) {</span>
+<span class="nc" id="L41">      System.out.println(e.getMessage());</span>
+<span class="nc" id="L42">    } catch (URISyntaxException ignored) {</span>
+<span class="nc" id="L43">    }</span>
+<span class="nc" id="L44">    return null;</span>
+  }
+
+  @Override
+<span class="nc" id="L48">  public void setOutputDummyApi(OutputDummyApi outputDummyApi) {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

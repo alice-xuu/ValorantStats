@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutputDummyApi.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.apicalls.dummy</a> &gt; <span class="el_source">OutputDummyApi.java</span></div><h1>OutputDummyApi.java</h1><pre class="source lang-java linenums">package valorantstats.model.apicalls.dummy;
+
+/** Dummy Api for when the output api is offline */
+<span class="fc" id="L4">public class OutputDummyApi {</span>
+  /**
+   * @return string in JSON format representing data from a real api call when an image is uploaded
+   *     to imgur successfully
+   */
+  public String postRequestImgurShortFormDummy() {
+<span class="nc" id="L10">    String string =</span>
+        &quot;{\&quot;status\&quot;:200,\&quot;success\&quot;:true,\&quot;data\&quot;:{\&quot;id\&quot;:\&quot;8KSCiao\&quot;,\&quot;deletehash\&quot;:\&quot;sN8Q0Fh3WTGyZOR\&quot;,\&quot;account_id\&quot;:null,\&quot;account_url\&quot;:null,\&quot;ad_type\&quot;:null,\&quot;ad_url\&quot;:null,\&quot;title\&quot;:null,\&quot;description\&quot;:null,\&quot;name\&quot;:\&quot;\&quot;,\&quot;type\&quot;:\&quot;image/jpeg\&quot;,\&quot;width\&quot;:700,\&quot;height\&quot;:798,\&quot;size\&quot;:65815,\&quot;views\&quot;:0,\&quot;section\&quot;:null,\&quot;vote\&quot;:null,\&quot;bandwidth\&quot;:0,\&quot;animated\&quot;:false,\&quot;favorite\&quot;:false,\&quot;in_gallery\&quot;:false,\&quot;in_most_viral\&quot;:false,\&quot;has_sound\&quot;:false,\&quot;is_ad\&quot;:false,\&quot;nsfw\&quot;:null,\&quot;link\&quot;:\&quot;dummyLink\&quot;,\&quot;tags\&quot;:[],\&quot;datetime\&quot;:1653553287,\&quot;mp4\&quot;:\&quot;\&quot;,\&quot;hls\&quot;:\&quot;\&quot;}}&quot;;
+<span class="nc" id="L12">    return string;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

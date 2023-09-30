@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchPageImplFast.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.view</a> &gt; <span class="el_source">SearchPageImplFast.java</span></div><h1>SearchPageImplFast.java</h1><pre class="source lang-java linenums">package valorantstats.view;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import valorantstats.model.enums.CallResult;
+import valorantstats.model.jsonobjects.Match;
+import valorantstats.model.jsonobjects.Player;
+import valorantstats.model.jsonobjects.Team;
+import valorantstats.presenter.SearchPagePresenter;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Optional;
+
+/** View logic for Fast Mode On where images are not displayed */
+public class SearchPageImplFast implements SearchPage {
+
+  private final GridPane searchPane;
+  private final GridPane resultsPane;
+
+  private SearchPagePresenter searchPagePresenter;
+  private Button btnClearCache;
+  private Button btnSearch;
+  private TextField tfSearch;
+
+<span class="nc" id="L33">  public SearchPageImplFast() {</span>
+<span class="nc" id="L34">    this.searchPane = new GridPane();</span>
+<span class="nc" id="L35">    searchPane.setPadding(new Insets(20));</span>
+
+<span class="nc" id="L37">    this.resultsPane = new GridPane();</span>
+<span class="nc" id="L38">    resultsPane.setVgap(15);</span>
+<span class="nc" id="L39">    resultsPane.setHgap(15);</span>
+
+<span class="nc" id="L41">    ColumnConstraints col1 = new ColumnConstraints();</span>
+<span class="nc" id="L42">    col1.setPercentWidth(25);</span>
+<span class="nc" id="L43">    ColumnConstraints col2 = new ColumnConstraints();</span>
+<span class="nc" id="L44">    col2.setPercentWidth(25);</span>
+<span class="nc" id="L45">    ColumnConstraints col3 = new ColumnConstraints();</span>
+<span class="nc" id="L46">    col3.setPercentWidth(25);</span>
+<span class="nc" id="L47">    ColumnConstraints col4 = new ColumnConstraints();</span>
+<span class="nc" id="L48">    col4.setPercentWidth(25);</span>
+<span class="nc" id="L49">    resultsPane.getColumnConstraints().addAll(col1, col2, col3, col4);</span>
+
+<span class="nc" id="L51">    Label labelSearch = new Label(&quot;Enter a team:&quot;);</span>
+<span class="nc" id="L52">    Font font = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 20);</span>
+<span class="nc" id="L53">    labelSearch.setFont(font);</span>
+
+<span class="nc" id="L55">    tfSearch = new TextField();</span>
+<span class="nc" id="L56">    btnSearch = new Button();</span>
+<span class="nc" id="L57">    btnSearch.setText(&quot;Search&quot;);</span>
+<span class="nc" id="L58">    btnSearch.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L60">          searchPagePresenter.searchTeamInput(tfSearch.getText(), false);</span>
+<span class="nc" id="L61">        });</span>
+
+<span class="nc" id="L63">    btnClearCache = new Button();</span>
+<span class="nc" id="L64">    btnClearCache.setText(&quot;Clear Cache&quot;);</span>
+<span class="nc" id="L65">    btnClearCache.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L67">          searchPagePresenter.clearCache();</span>
+<span class="nc" id="L68">        });</span>
+
+<span class="nc" id="L70">    HBox hbSearch = new HBox();</span>
+<span class="nc" id="L71">    hbSearch.getChildren().addAll(labelSearch, tfSearch, btnSearch, btnClearCache);</span>
+
+<span class="nc" id="L73">    hbSearch.setSpacing(10);</span>
+
+<span class="nc" id="L75">    searchPane.add(hbSearch, 0, 1);</span>
+<span class="nc" id="L76">    searchPane.add(resultsPane, 0, 3);</span>
+<span class="nc" id="L77">  }</span>
+
+  @Override
+  public void clearSearchTextField() {
+<span class="nc" id="L81">    tfSearch.clear();</span>
+<span class="nc" id="L82">  }</span>
+
+  @Override
+  public void setBtnSearch(boolean disable) {
+<span class="nc" id="L86">    btnSearch.setDisable(disable);</span>
+<span class="nc" id="L87">  }</span>
+
+  @Override
+  public void setBtnClearCacheDisable(boolean disable) {
+<span class="nc" id="L91">    btnClearCache.setDisable(disable);</span>
+<span class="nc" id="L92">  }</span>
+
+  @Override
+  public void searchTeam(String name) {
+<span class="nc" id="L96">    searchPagePresenter.searchTeamInput(name, false);</span>
+<span class="nc" id="L97">  }</span>
+
+  @Override
+  public void processSearchTeamCacheHit(String name, SimpleEntry&lt;CallResult, String&gt; teamResult) {
+<span class="nc" id="L101">    ButtonType cache = new ButtonType(&quot;Cache&quot;, ButtonBar.ButtonData.NO);</span>
+<span class="nc" id="L102">    ButtonType fresh = new ButtonType(&quot;Fresh&quot;, ButtonBar.ButtonData.YES);</span>
+<span class="nc" id="L103">    Alert alert = alertCache(cache, fresh);</span>
+<span class="nc" id="L104">    Optional&lt;ButtonType&gt; result = alert.showAndWait();</span>
+
+<span class="nc bnc" id="L106" title="All 4 branches missed.">    if (result.isPresent() &amp;&amp; result.get() == cache) {</span>
+<span class="nc" id="L107">      searchPagePresenter.teamCacheOptionAction(name, teamResult);</span>
+<span class="nc bnc" id="L108" title="All 4 branches missed.">    } else if (result.isPresent() &amp;&amp; result.get() == fresh) {</span>
+<span class="nc" id="L109">      searchPagePresenter.searchTeamInput(name, true);</span>
+    }
+<span class="nc" id="L111">  }</span>
+
+  @Override
+  public void processSearchMatchCacheHit(String name, SimpleEntry&lt;CallResult, String&gt; teamResult) {
+<span class="nc" id="L115">    ButtonType cache = new ButtonType(&quot;Cache&quot;, ButtonBar.ButtonData.NO);</span>
+<span class="nc" id="L116">    ButtonType fresh = new ButtonType(&quot;Fresh&quot;, ButtonBar.ButtonData.YES);</span>
+<span class="nc" id="L117">    Alert alert = alertCache(cache, fresh);</span>
+<span class="nc" id="L118">    Optional&lt;ButtonType&gt; result = alert.showAndWait();</span>
+
+<span class="nc bnc" id="L120" title="All 4 branches missed.">    if (result.isPresent() &amp;&amp; result.get() == cache) {</span>
+<span class="nc" id="L121">      searchPagePresenter.matchCacheOptionAction(name, teamResult);</span>
+<span class="nc bnc" id="L122" title="All 4 branches missed.">    } else if (result.isPresent() &amp;&amp; result.get() == fresh) {</span>
+<span class="nc" id="L123">      searchPagePresenter.runSearchMatchTask(name, true);</span>
+    }
+<span class="nc" id="L125">  }</span>
+
+  @Override
+  public void displaySearchTeamError(SimpleEntry&lt;CallResult, String&gt; searchTeamResult) {
+<span class="nc" id="L129">    searchAlert(searchTeamResult.getValue());</span>
+<span class="nc" id="L130">  }</span>
+
+  @Override
+  public void displaySearchTeam(Team team, String highlightColor) {
+<span class="nc" id="L134">    resultsPane.getChildren().clear();</span>
+
+<span class="nc" id="L136">    Label lblName = new Label(team.getName());</span>
+<span class="nc" id="L137">    Font font = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 24);</span>
+<span class="nc" id="L138">    lblName.setFont(font);</span>
+<span class="nc" id="L139">    lblName.setUnderline(true);</span>
+
+<span class="nc" id="L141">    lblName.setOnMouseEntered((event) -&gt; highlight(lblName, highlightColor));</span>
+<span class="nc" id="L142">    lblName.setOnMouseExited((event) -&gt; endHighlight(lblName));</span>
+<span class="nc" id="L143">    lblName.setOnMouseClicked(</span>
+        (event) -&gt; {
+<span class="nc" id="L145">          searchPagePresenter.runSearchMatchTask(team.getId().toString(), false);</span>
+<span class="nc" id="L146">        });</span>
+
+<span class="nc" id="L148">    Label lblTeamInfo = new Label(&quot;Team Information:&quot;);</span>
+<span class="nc" id="L149">    Label lblLoc = new Label(&quot;Location: &quot; + team.getLocation() + &quot;\nAcronym: &quot; + team.getAcronym());</span>
+<span class="nc" id="L150">    VBox teamInfo = new VBox();</span>
+<span class="nc" id="L151">    teamInfo.setSpacing(10);</span>
+<span class="nc" id="L152">    GridPane.setFillWidth(teamInfo, true);</span>
+<span class="nc" id="L153">    teamInfo.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L154">    teamInfo.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L155">    teamInfo.getChildren().addAll(lblName, lblTeamInfo, lblLoc);</span>
+<span class="nc" id="L156">    resultsPane.add(teamInfo, 0, 1, 4, 2);</span>
+
+<span class="nc" id="L158">    Label lblPlayers = new Label(&quot;Players&quot;);</span>
+<span class="nc" id="L159">    Font fontPlayers = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 20);</span>
+<span class="nc" id="L160">    lblPlayers.setFont(fontPlayers);</span>
+<span class="nc" id="L161">    GridPane.setFillWidth(lblPlayers, true);</span>
+<span class="nc" id="L162">    lblPlayers.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L163">    lblPlayers.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L165">    resultsPane.add(lblPlayers, 0, 3, 4, 1);</span>
+
+<span class="nc" id="L167">    Label lblColumnAlias = new Label(&quot;Alias&quot;);</span>
+<span class="nc" id="L168">    Label lblColumnFirstName = new Label(&quot;First Name&quot;);</span>
+<span class="nc" id="L169">    Label lblColumnLastName = new Label(&quot;Last Name&quot;);</span>
+<span class="nc" id="L170">    Label lblColumnNationality = new Label(&quot;Nationality&quot;);</span>
+
+<span class="nc" id="L172">    resultsPane.addRow(</span>
+        4, lblColumnAlias, lblColumnFirstName, lblColumnLastName, lblColumnNationality);
+<span class="nc" id="L174">    Font fontCol = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 16);</span>
+<span class="nc" id="L175">    lblColumnAlias.setFont(fontCol);</span>
+<span class="nc" id="L176">    lblColumnFirstName.setFont(fontCol);</span>
+<span class="nc" id="L177">    lblColumnLastName.setFont(fontCol);</span>
+<span class="nc" id="L178">    lblColumnNationality.setFont(fontCol);</span>
+
+<span class="nc" id="L180">    int index = 5;</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    for (Player player : team.getPlayers()) {</span>
+<span class="nc" id="L182">      Label lblPlayerName = new Label(player.getName());</span>
+<span class="nc" id="L183">      Label lblPlayerFirstName = new Label(player.getFirst_name());</span>
+<span class="nc" id="L184">      Label lblPlayerLastName = new Label(player.getLast_name());</span>
+<span class="nc" id="L185">      Label lblPlayerNationality = new Label(player.getNationality());</span>
+<span class="nc" id="L186">      lblPlayerName.setUnderline(true);</span>
+<span class="nc" id="L187">      lblPlayerName.setOnMouseEntered((event) -&gt; highlight(lblPlayerName, highlightColor));</span>
+<span class="nc" id="L188">      lblPlayerName.setOnMouseExited((event) -&gt; endHighlight(lblPlayerName));</span>
+<span class="nc" id="L189">      lblPlayerName.setOnMouseClicked(</span>
+          (event) -&gt; {
+<span class="nc" id="L191">            handleTeamMatchesClick(team.getId().toString());</span>
+<span class="nc" id="L192">          });</span>
+
+<span class="nc" id="L194">      resultsPane.addRow(</span>
+          index, lblPlayerName, lblPlayerFirstName, lblPlayerLastName, lblPlayerNationality);
+<span class="nc" id="L196">      index++;</span>
+<span class="nc" id="L197">    }</span>
+<span class="nc" id="L198">  }</span>
+
+  @Override
+  public void handleTeamMatchesClick(String name) {
+<span class="nc" id="L202">    searchPagePresenter.runSearchMatchTask(name, false);</span>
+<span class="nc" id="L203">  }</span>
+
+  @Override
+  public void displayHandleTeamMatchesClickError(
+      SimpleEntry&lt;CallResult, String&gt; searchMatchResult) {
+<span class="nc" id="L208">    searchAlert(searchMatchResult.getValue());</span>
+<span class="nc" id="L209">  }</span>
+
+  @Override
+  public void displayHandleTeamMatchesClick(Match[] matches, String highlightColor) {
+
+<span class="nc" id="L214">    resultsPane.getChildren().clear();</span>
+<span class="nc" id="L215">    int index = 2;</span>
+
+<span class="nc" id="L217">    Label lblDateColumn = new Label(&quot;Date&quot;);</span>
+<span class="nc" id="L218">    lblDateColumn.setWrapText(true);</span>
+<span class="nc" id="L219">    lblDateColumn.setTextAlignment(TextAlignment.CENTER);</span>
+
+<span class="nc" id="L221">    Label lblNOGColumn = new Label(&quot;Number of games&quot;);</span>
+<span class="nc" id="L222">    lblNOGColumn.setWrapText(true);</span>
+<span class="nc" id="L223">    lblNOGColumn.setTextAlignment(TextAlignment.CENTER);</span>
+
+<span class="nc" id="L225">    Label lblOp1Column = new Label(&quot;Opponent 1&quot;);</span>
+<span class="nc" id="L226">    lblOp1Column.setWrapText(true);</span>
+<span class="nc" id="L227">    lblOp1Column.setTextAlignment(TextAlignment.CENTER);</span>
+
+<span class="nc" id="L229">    Label lblOp2Column = new Label(&quot;Opponent 2&quot;);</span>
+<span class="nc" id="L230">    lblOp2Column.setWrapText(true);</span>
+<span class="nc" id="L231">    lblOp2Column.setTextAlignment(TextAlignment.CENTER);</span>
+
+<span class="nc" id="L233">    Font font = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 15);</span>
+<span class="nc" id="L234">    lblDateColumn.setFont(font);</span>
+<span class="nc" id="L235">    lblNOGColumn.setFont(font);</span>
+<span class="nc" id="L236">    lblOp1Column.setFont(font);</span>
+<span class="nc" id="L237">    lblOp2Column.setFont(font);</span>
+
+<span class="nc" id="L239">    resultsPane.addRow(1, lblDateColumn, lblNOGColumn, lblOp1Column, lblOp2Column);</span>
+
+<span class="nc bnc" id="L241" title="All 2 branches missed.">    for (Match match : matches) {</span>
+<span class="nc" id="L242">      Label lblDate = new Label(match.getBegin_at());</span>
+<span class="nc" id="L243">      Label lblGames = new Label(match.getNumber_of_games().toString());</span>
+
+<span class="nc" id="L245">      Match.Opponent opponent1 = match.getOpponents().get(0);</span>
+<span class="nc" id="L246">      Match.Opponent opponent2 = match.getOpponents().get(1);</span>
+<span class="nc" id="L247">      Label lblOpponent1 = new Label(opponent1.getOpponent().getName());</span>
+<span class="nc" id="L248">      Label lblOpponent2 = new Label(opponent2.getOpponent().getName());</span>
+<span class="nc" id="L249">      lblOpponent1.setUnderline(true);</span>
+<span class="nc" id="L250">      lblOpponent2.setUnderline(true);</span>
+
+<span class="nc" id="L252">      lblOpponent1.setOnMouseEntered((event) -&gt; highlight(lblOpponent1, highlightColor));</span>
+<span class="nc" id="L253">      lblOpponent1.setOnMouseExited((event) -&gt; endHighlight(lblOpponent1));</span>
+<span class="nc" id="L254">      lblOpponent1.setOnMouseClicked(</span>
+          (event) -&gt; {
+<span class="nc" id="L256">            searchTeam(opponent1.getOpponent().getName());</span>
+<span class="nc" id="L257">          });</span>
+
+<span class="nc" id="L259">      lblOpponent2.setOnMouseEntered((event) -&gt; highlight(lblOpponent2, highlightColor));</span>
+<span class="nc" id="L260">      lblOpponent2.setOnMouseExited((event) -&gt; endHighlight(lblOpponent2));</span>
+<span class="nc" id="L261">      lblOpponent2.setOnMouseClicked(</span>
+          (event) -&gt; {
+<span class="nc" id="L263">            searchTeam(opponent2.getOpponent().getName());</span>
+<span class="nc" id="L264">          });</span>
+
+<span class="nc" id="L266">      resultsPane.addRow(index, lblDate, lblGames, lblOpponent1, lblOpponent2);</span>
+
+<span class="nc" id="L268">      index += 2;</span>
+    }
+<span class="nc" id="L270">  }</span>
+
+  @Override
+  public void clearPane() {
+<span class="nc" id="L274">    resultsPane.getChildren().clear();</span>
+<span class="nc" id="L275">  }</span>
+
+  @Override
+  public Alert alertCache(ButtonType cache, ButtonType fresh) {
+
+<span class="nc" id="L280">    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, &quot;&quot;, cache, fresh);</span>
+<span class="nc" id="L281">    alert.setTitle(&quot;Cache Alert&quot;);</span>
+<span class="nc" id="L282">    alert.setHeaderText(&quot;Cache exists for this data&quot;);</span>
+<span class="nc" id="L283">    alert.setContentText(&quot;Would you like to retrieve the cache results or generate fresh results?&quot;);</span>
+<span class="nc" id="L284">    return alert;</span>
+  }
+
+  @Override
+  public GridPane getSearchPane() {
+<span class="nc" id="L289">    return searchPane;</span>
+  }
+
+  @Override
+  public GridPane getResultsPane() {
+<span class="nc" id="L294">    return resultsPane;</span>
+  }
+
+  @Override
+  public void searchAlert(String errorMsg) {
+<span class="nc" id="L299">    Alert alert = new Alert(Alert.AlertType.ERROR);</span>
+<span class="nc" id="L300">    alert.setTitle(&quot;Search Error&quot;);</span>
+<span class="nc" id="L301">    alert.setHeaderText(errorMsg);</span>
+<span class="nc" id="L302">    alert.showAndWait();</span>
+<span class="nc" id="L303">  }</span>
+
+  @Override
+  public void showCacheAlert() {
+<span class="nc" id="L307">    Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L308">    alert.setTitle(&quot;Cache Alert&quot;);</span>
+<span class="nc" id="L309">    alert.setHeaderText(&quot;Cache Cleared&quot;);</span>
+<span class="nc" id="L310">    alert.setContentText(&quot;All cached team and match results have been cleared&quot;);</span>
+<span class="nc" id="L311">    alert.showAndWait();</span>
+<span class="nc" id="L312">  }</span>
+
+  @Override
+  public void setSearchPagePresenter(SearchPagePresenter searchPagePresenter) {
+<span class="nc" id="L316">    this.searchPagePresenter = searchPagePresenter;</span>
+<span class="nc" id="L317">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

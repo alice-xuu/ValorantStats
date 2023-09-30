@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WitTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-09-30T08:17:17" hostname="MacBook-AX.local" time="0.109">
+  <properties/>
+  <testcase name="noIntentMessage()" classname="WitTest" time="0.063"/>
+  <testcase name="errorGetRequestMessage()" classname="WitTest" time="0.005"/>
+  <testcase name="searchTeamMessageNoTeam()" classname="WitTest" time="0.004"/>
+  <testcase name="navigationMessageNoEntity()" classname="WitTest" time="0.004"/>
+  <testcase name="navigationMessage()" classname="WitTest" time="0.003"/>
+  <testcase name="changeColourMessageNoEntity()" classname="WitTest" time="0.003"/>
+  <testcase name="changeColourMessage()" classname="WitTest" time="0.009"/>
+  <testcase name="searchMatchMessage()" classname="WitTest" time="0.002"/>
+  <testcase name="searchTeamMessage()" classname="WitTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

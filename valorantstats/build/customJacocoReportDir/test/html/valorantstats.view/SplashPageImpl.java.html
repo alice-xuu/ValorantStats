@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SplashPageImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.view</a> &gt; <span class="el_source">SplashPageImpl.java</span></div><h1>SplashPageImpl.java</h1><pre class="source lang-java linenums">package valorantstats.view;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import valorantstats.presenter.DisplayPresenterImpl;
+
+public class SplashPageImpl implements SplashPage {
+  private final BorderPane splashPane;
+<span class="nc" id="L17">  private final String splash = &quot;ValorantWallpaper_Haven.jpg&quot;;</span>
+  private Timeline timeline;
+  private DisplayPresenterImpl displayPresenter;
+<span class="nc" id="L20">  private int width = 640;</span>
+<span class="nc" id="L21">  private int height = 430;</span>
+
+<span class="nc" id="L23">  public SplashPageImpl() {</span>
+<span class="nc" id="L24">    this.splashPane = new BorderPane();</span>
+<span class="nc" id="L25">  }</span>
+
+  @Override
+  public void display() {
+<span class="nc" id="L29">    Image imgSplash = new Image(splash, width, height, false, false);</span>
+<span class="nc" id="L30">    ImageView imgViewSplashImg = new ImageView(imgSplash);</span>
+
+<span class="nc" id="L32">    ProgressBar progressBar = new ProgressBar(0);</span>
+<span class="nc" id="L33">    VBox vBoxProgressBar = new VBox(progressBar);</span>
+<span class="nc" id="L34">    progressBar.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L35">    vBoxProgressBar.setFillWidth(true);</span>
+<span class="nc" id="L36">    this.timeline =</span>
+        new Timeline(
+<span class="nc" id="L38">            new KeyFrame(Duration.ZERO, new KeyValue(progressBar.progressProperty(), 0)),</span>
+            new KeyFrame(
+<span class="nc" id="L40">                Duration.seconds(15),</span>
+                e -&gt; { // # will last 15 seconds then go to login page
+<span class="nc" id="L42">                  displayPresenter.showLoginPage();</span>
+<span class="nc" id="L43">                },</span>
+<span class="nc" id="L44">                new KeyValue(progressBar.progressProperty(), 1)));</span>
+<span class="nc" id="L45">    timeline.setCycleCount(1);</span>
+
+<span class="nc" id="L47">    splashPane.setTop(imgViewSplashImg);</span>
+<span class="nc" id="L48">    splashPane.setBottom(vBoxProgressBar);</span>
+<span class="nc" id="L49">  }</span>
+
+  @Override
+  public void startTimeline() {
+<span class="nc" id="L53">    timeline.play();</span>
+<span class="nc" id="L54">  }</span>
+
+  @Override
+  public Pane getPane() {
+<span class="nc" id="L58">    return splashPane;</span>
+  }
+
+  @Override
+  public void setDisplayPresenter(DisplayPresenterImpl displayPresenter) {
+<span class="nc" id="L63">    this.displayPresenter = displayPresenter;</span>
+<span class="nc" id="L64">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

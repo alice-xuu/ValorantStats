@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Team.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.jsonobjects</a> &gt; <span class="el_source">Team.java</span></div><h1>Team.java</h1><pre class="source lang-java linenums">package valorantstats.model.jsonobjects;
+
+import java.util.List;
+
+/** Represents team data retrieved from Pandascore */
+public class Team {
+  private final String acronym;
+  private final CurrentVideoGame cvg;
+  private final Integer id;
+  private final String image_url;
+  private final String location;
+  private final String modified_at;
+  private final String name;
+  private final List&lt;Player&gt; players;
+  private final String slug;
+
+  public Team(
+      String acronym,
+      CurrentVideoGame cvg,
+      Integer id,
+      String image_url,
+      String location,
+      String modified_at,
+      String name,
+      List&lt;Player&gt; players,
+<span class="nc" id="L26">      String slug) {</span>
+<span class="nc" id="L27">    this.acronym = acronym;</span>
+<span class="nc" id="L28">    this.cvg = cvg;</span>
+<span class="nc" id="L29">    this.id = id;</span>
+<span class="nc" id="L30">    this.image_url = image_url;</span>
+<span class="nc" id="L31">    this.location = location;</span>
+<span class="nc" id="L32">    this.modified_at = modified_at;</span>
+<span class="nc" id="L33">    this.name = name;</span>
+<span class="nc" id="L34">    this.players = players;</span>
+<span class="nc" id="L35">    this.slug = slug;</span>
+<span class="nc" id="L36">  }</span>
+
+  public String getAcronym() {
+<span class="fc" id="L39">    return acronym;</span>
+  }
+
+  public CurrentVideoGame getCvg() {
+<span class="nc" id="L43">    return cvg;</span>
+  }
+
+  public Integer getId() {
+<span class="fc" id="L47">    return id;</span>
+  }
+
+  public String getImage_url() {
+<span class="nc" id="L51">    return image_url;</span>
+  }
+
+  public String getLocation() {
+<span class="fc" id="L55">    return location;</span>
+  }
+
+  public String getModified_at() {
+<span class="nc" id="L59">    return modified_at;</span>
+  }
+
+  public String getName() {
+<span class="nc" id="L63">    return name;</span>
+  }
+
+  public List&lt;Player&gt; getPlayers() {
+<span class="nc" id="L67">    return players;</span>
+  }
+
+  public String getSlug() {
+<span class="nc" id="L71">    return slug;</span>
+  }
+
+  public class CurrentVideoGame {
+    private final Integer id;
+    private final String name;
+    private final String slug;
+
+<span class="nc" id="L79">    public CurrentVideoGame(Integer id, String name, String slug) {</span>
+<span class="nc" id="L80">      this.id = id;</span>
+<span class="nc" id="L81">      this.name = name;</span>
+<span class="nc" id="L82">      this.slug = slug;</span>
+<span class="nc" id="L83">    }</span>
+
+    public Integer getId() {
+<span class="nc" id="L86">      return id;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L90">      return name;</span>
+    }
+
+    public String getSlug() {
+<span class="nc" id="L94">      return slug;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

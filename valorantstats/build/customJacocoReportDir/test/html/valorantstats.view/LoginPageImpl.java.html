@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginPageImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.view</a> &gt; <span class="el_source">LoginPageImpl.java</span></div><h1>LoginPageImpl.java</h1><pre class="source lang-java linenums">package valorantstats.view;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import valorantstats.presenter.DisplayPresenterImpl;
+
+import static javafx.scene.layout.GridPane.REMAINING;
+import static javafx.scene.layout.GridPane.setColumnSpan;
+
+public class LoginPageImpl implements LoginPage {
+  private final BorderPane mainLoginPane;
+  private GridPane loginChoicePane;
+  private Font fontBold;
+  private DisplayPresenterImpl displayPresenter;
+
+<span class="nc" id="L28">  public LoginPageImpl() {</span>
+
+<span class="nc" id="L30">    this.mainLoginPane = new BorderPane();</span>
+
+<span class="nc" id="L32">    mainLoginPane.setMaxWidth(Double.MAX_VALUE);</span>
+
+<span class="nc" id="L34">    this.loginChoicePane = new GridPane();</span>
+<span class="nc" id="L35">    loginChoicePane.setPadding(new Insets(30));</span>
+<span class="nc" id="L36">    loginChoicePane.setHgap(30);</span>
+<span class="nc" id="L37">    loginChoicePane.setVgap(30);</span>
+
+<span class="nc" id="L39">    fontBold = Font.font(&quot;Arial&quot;, FontWeight.NORMAL, 20);</span>
+
+<span class="nc" id="L41">    Label lblWelcome = new Label(&quot;Welcome to Pandascore Valorant&quot;);</span>
+<span class="nc" id="L42">    Font font = Font.font(&quot;Arial&quot;, FontWeight.BOLD, 30);</span>
+<span class="nc" id="L43">    lblWelcome.setFont(font);</span>
+
+<span class="nc" id="L45">    Label lblLoginChoice =</span>
+        new Label(&quot;Would you like to login to an existing account or create a new account?&quot;);
+<span class="nc" id="L47">    lblLoginChoice.setWrapText(true);</span>
+<span class="nc" id="L48">    lblLoginChoice.setFont(fontBold);</span>
+
+<span class="nc" id="L50">    Button btnExistingAcc = new Button(&quot;Existing Account&quot;);</span>
+<span class="nc" id="L51">    btnExistingAcc.setFont(fontBold);</span>
+<span class="nc" id="L52">    Button btnNewAcc = new Button(&quot;New Account&quot;);</span>
+<span class="nc" id="L53">    btnNewAcc.setFont(fontBold);</span>
+
+<span class="nc" id="L55">    btnExistingAcc.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L57">          displayPresenter.showExistingAccountPage();</span>
+<span class="nc" id="L58">        });</span>
+<span class="nc" id="L59">    btnNewAcc.setOnAction(</span>
+        (event) -&gt; {
+<span class="nc" id="L61">          displayPresenter.showNewAccountPage();</span>
+<span class="nc" id="L62">        });</span>
+
+<span class="nc" id="L64">    setColumnSpan(lblWelcome, REMAINING);</span>
+<span class="nc" id="L65">    GridPane.setFillWidth(lblWelcome, true);</span>
+<span class="nc" id="L66">    lblWelcome.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L67">    lblWelcome.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L69">    setColumnSpan(lblLoginChoice, REMAINING);</span>
+<span class="nc" id="L70">    GridPane.setFillWidth(lblLoginChoice, true);</span>
+<span class="nc" id="L71">    lblLoginChoice.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L72">    lblLoginChoice.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L73">    lblLoginChoice.setTextAlignment(TextAlignment.CENTER);</span>
+
+<span class="nc" id="L75">    HBox hBox = new HBox(btnExistingAcc, btnNewAcc);</span>
+<span class="nc" id="L76">    hBox.setSpacing(30);</span>
+<span class="nc" id="L77">    GridPane.setFillWidth(hBox, true);</span>
+<span class="nc" id="L78">    hBox.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L79">    hBox.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L81">    Line line = new Line();</span>
+<span class="nc" id="L82">    line.setStartX(50f);</span>
+<span class="nc" id="L83">    line.setEndX(590f);</span>
+<span class="nc" id="L84">    line.setStrokeWidth(3);</span>
+<span class="nc" id="L85">    line.setStyle(&quot;-fx-stroke: #fa4454;&quot;);</span>
+
+<span class="nc" id="L87">    loginChoicePane.addRow(0, lblWelcome);</span>
+<span class="nc" id="L88">    loginChoicePane.addRow(2, line);</span>
+<span class="nc" id="L89">    loginChoicePane.addRow(3, lblLoginChoice);</span>
+<span class="nc" id="L90">    loginChoicePane.addRow(4, hBox);</span>
+
+<span class="nc" id="L92">    loginChoicePane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L93">    loginChoicePane.setPrefWidth(300);</span>
+
+<span class="nc" id="L95">    mainLoginPane.setCenter(loginChoicePane);</span>
+<span class="nc" id="L96">  }</span>
+
+  // log in to an existing account
+  @Override
+  public void existingAccount() {
+<span class="nc" id="L101">    GridPane existingAccountPane = new GridPane();</span>
+<span class="nc" id="L102">    existingAccountPane.setPadding(new Insets(30));</span>
+<span class="nc" id="L103">    existingAccountPane.setHgap(30);</span>
+<span class="nc" id="L104">    existingAccountPane.setVgap(30);</span>
+
+<span class="nc" id="L106">    Label lblUsername = new Label(&quot;Username&quot;);</span>
+<span class="nc" id="L107">    lblUsername.setFont(fontBold);</span>
+
+<span class="nc" id="L109">    TextField tfUsername = new TextField();</span>
+<span class="nc" id="L110">    tfUsername.setFont(fontBold);</span>
+
+<span class="nc" id="L112">    Label lblPassword = new Label(&quot;Password&quot;);</span>
+<span class="nc" id="L113">    lblPassword.setFont(fontBold);</span>
+
+<span class="nc" id="L115">    TextField tfPassword = new TextField();</span>
+<span class="nc" id="L116">    tfPassword.setFont(fontBold);</span>
+
+<span class="nc" id="L118">    Button btnSubmit = new Button(&quot;Submit&quot;);</span>
+<span class="nc" id="L119">    btnSubmit.setFont(fontBold);</span>
+
+<span class="nc" id="L121">    btnSubmit.setOnAction(</span>
+        event -&gt; {
+<span class="nc" id="L123">          displayPresenter.existingAccountSubmitAction(tfUsername.getText(), tfPassword.getText());</span>
+<span class="nc" id="L124">        });</span>
+
+<span class="nc" id="L126">    Label lblTitle = new Label(&quot;Enter your existing account details&quot;);</span>
+<span class="nc" id="L127">    lblTitle.setFont(fontBold);</span>
+
+<span class="nc" id="L129">    setColumnSpan(lblTitle, REMAINING);</span>
+<span class="nc" id="L130">    existingAccountPane.add(lblTitle, 0, 0);</span>
+
+<span class="nc" id="L132">    existingAccountPane.add(lblUsername, 0, 1);</span>
+<span class="nc" id="L133">    existingAccountPane.add(tfUsername, 1, 1);</span>
+
+<span class="nc" id="L135">    existingAccountPane.add(lblPassword, 0, 2);</span>
+<span class="nc" id="L136">    existingAccountPane.add(tfPassword, 1, 2);</span>
+
+<span class="nc" id="L138">    existingAccountPane.add(createBackButton(), 0, 3);</span>
+<span class="nc" id="L139">    existingAccountPane.add(btnSubmit, 1, 3);</span>
+
+<span class="nc" id="L141">    existingAccountPane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L142">    mainLoginPane.setCenter(existingAccountPane);</span>
+<span class="nc" id="L143">  }</span>
+
+  // create a new account
+  @Override
+  public void newAccount() {
+<span class="nc" id="L148">    GridPane newAccountPane = new GridPane();</span>
+<span class="nc" id="L149">    newAccountPane.setPadding(new Insets(30));</span>
+<span class="nc" id="L150">    newAccountPane.setHgap(30);</span>
+<span class="nc" id="L151">    newAccountPane.setVgap(30);</span>
+
+<span class="nc" id="L153">    Label lblUsername = new Label(&quot;Username&quot;);</span>
+<span class="nc" id="L154">    lblUsername.setFont(fontBold);</span>
+
+<span class="nc" id="L156">    TextField tfUsername = new TextField();</span>
+<span class="nc" id="L157">    tfUsername.setFont(fontBold);</span>
+
+<span class="nc" id="L159">    Label lblPassword = new Label(&quot;Password&quot;);</span>
+<span class="nc" id="L160">    lblPassword.setFont(fontBold);</span>
+
+<span class="nc" id="L162">    TextField tfPassword = new TextField();</span>
+<span class="nc" id="L163">    tfPassword.setFont(fontBold);</span>
+
+<span class="nc" id="L165">    Button btnSubmit = new Button(&quot;Submit&quot;);</span>
+<span class="nc" id="L166">    btnSubmit.setFont(fontBold);</span>
+
+<span class="nc" id="L168">    btnSubmit.setOnAction(</span>
+        (event -&gt; {
+<span class="nc" id="L170">          displayPresenter.newAccountSubmitAction(tfUsername.getText(), tfPassword.getText());</span>
+<span class="nc" id="L171">        }));</span>
+
+<span class="nc" id="L173">    Label lblTitle = new Label(&quot;Enter details for your new account&quot;);</span>
+<span class="nc" id="L174">    lblTitle.setFont(fontBold);</span>
+
+<span class="nc" id="L176">    setColumnSpan(lblTitle, REMAINING);</span>
+<span class="nc" id="L177">    newAccountPane.add(lblTitle, 0, 0);</span>
+
+<span class="nc" id="L179">    newAccountPane.add(lblUsername, 0, 1);</span>
+<span class="nc" id="L180">    newAccountPane.add(tfUsername, 1, 1);</span>
+
+<span class="nc" id="L182">    newAccountPane.add(lblPassword, 0, 2);</span>
+<span class="nc" id="L183">    newAccountPane.add(tfPassword, 1, 2);</span>
+
+<span class="nc" id="L185">    newAccountPane.add(createBackButton(), 0, 3);</span>
+<span class="nc" id="L186">    newAccountPane.add(btnSubmit, 1, 3);</span>
+
+<span class="nc" id="L188">    newAccountPane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L189">    mainLoginPane.setCenter(newAccountPane);</span>
+<span class="nc" id="L190">  }</span>
+
+  /**
+   * Back button returns to the screen where the user can choose existing or new account
+   *
+   * @return back button
+   */
+  @Override
+  public Button createBackButton() {
+<span class="nc" id="L199">    Button btnBack = new Button(&quot;Back&quot;);</span>
+<span class="nc" id="L200">    btnBack.setFont(fontBold);</span>
+
+<span class="nc" id="L202">    btnBack.setOnAction(</span>
+        event -&gt; {
+<span class="nc" id="L204">          displayPresenter.showLoginChoicePage();</span>
+<span class="nc" id="L205">        });</span>
+<span class="nc" id="L206">    return btnBack;</span>
+  }
+
+  @Override
+  public void loginChoice() {
+<span class="nc" id="L211">    mainLoginPane.setCenter(loginChoicePane);</span>
+<span class="nc" id="L212">  }</span>
+
+  @Override
+  public Pane getMainLoginPane() {
+<span class="nc" id="L216">    return mainLoginPane;</span>
+  }
+
+  @Override
+  public void accountAlert(String errorMsg) {
+<span class="nc" id="L221">    Alert alert = new Alert(Alert.AlertType.ERROR);</span>
+<span class="nc" id="L222">    alert.setTitle(&quot;Account Error&quot;);</span>
+<span class="nc" id="L223">    alert.setHeaderText(errorMsg);</span>
+<span class="nc" id="L224">    alert.showAndWait();</span>
+<span class="nc" id="L225">  }</span>
+
+  @Override
+  public void setDisplayPresenter(DisplayPresenterImpl displayPresenter) {
+<span class="nc" id="L229">    this.displayPresenter = displayPresenter;</span>
+<span class="nc" id="L230">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

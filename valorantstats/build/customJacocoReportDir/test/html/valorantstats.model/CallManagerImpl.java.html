@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallManagerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model</a> &gt; <span class="el_source">CallManagerImpl.java</span></div><h1>CallManagerImpl.java</h1><pre class="source lang-java linenums">package valorantstats.model;
+
+import com.google.gson.Gson;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import valorantstats.model.apicalls.*;
+import valorantstats.model.callhandlers.ApiCaller;
+import valorantstats.model.callhandlers.CacheCaller;
+import valorantstats.model.callhandlers.Caller;
+import valorantstats.model.enums.CallResult;
+import valorantstats.model.jsonobjects.ErrorResponseOutput;
+import valorantstats.model.jsonobjects.ImgurData;
+import valorantstats.model.jsonobjects.Match;
+import valorantstats.model.jsonobjects.Team;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Base64;
+
+/** Implementation of CallManager to manage user team and match calls */
+public class CallManagerImpl implements CallManager {
+  private final boolean inputIsOnline;
+  private final boolean outputIsOnline;
+<span class="fc" id="L32">  private final String qrCodeSF = &quot;qrcode.png&quot;;</span>
+  Caller chain;
+  private InputApiCalls inputApiCalls;
+  private OutputApiCalls outputApiCalls;
+<span class="fc" id="L36">  private Integer currentTeamId = null;</span>
+  private CacheManager cacheManager;
+  private Caller apiCaller;
+
+  public CallManagerImpl(
+<span class="fc" id="L41">      boolean inputIsOnline, boolean outputIsOnline, Database db, CacheManager cacheManager) {</span>
+<span class="fc" id="L42">    this.inputIsOnline = inputIsOnline;</span>
+<span class="fc" id="L43">    this.outputIsOnline = outputIsOnline;</span>
+<span class="fc" id="L44">    this.cacheManager = cacheManager;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">    if (isInputIsOnline()) {</span>
+<span class="fc" id="L46">      this.inputApiCalls = new InputApiCallsOnline();</span>
+<span class="fc" id="L47">      Caller cacheCaller = new CacheCaller(cacheManager, inputApiCalls);</span>
+<span class="fc" id="L48">      apiCaller = new ApiCaller(cacheManager, inputApiCalls);</span>
+<span class="fc" id="L49">      cacheCaller.setNextCaller(apiCaller);</span>
+<span class="fc" id="L50">      chain = cacheCaller;</span>
+
+<span class="fc" id="L52">    } else {</span>
+<span class="fc" id="L53">      this.inputApiCalls = new inputApiCallsOffline();</span>
+<span class="fc" id="L54">      apiCaller = new ApiCaller(cacheManager, inputApiCalls);</span>
+<span class="fc" id="L55">      chain = apiCaller;</span>
+    }
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    if (isOutputIsOnline()) {</span>
+<span class="fc" id="L59">      this.outputApiCalls = new OutputApiCallsOnline();</span>
+    } else {
+<span class="fc" id="L61">      this.outputApiCalls = new OutputApiCallsOffline();</span>
+    }
+<span class="fc" id="L63">  }</span>
+
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; searchTeam(String name, boolean cacheOverride) {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">    if (!validateInputTeamName(name)) {</span>
+<span class="fc" id="L68">      return new SimpleEntry&lt;&gt;(CallResult.ERROR, &quot;Invalid input&quot;);</span>
+    }
+<span class="fc" id="L70">    SimpleEntry&lt;CallResult, String&gt; result = chain.callTeam(name, cacheOverride);</span>
+
+<span class="fc bfc" id="L72" title="All 4 branches covered.">    if (result.getKey() == CallResult.ERROR || result.getKey() == CallResult.CACHEHIT) {</span>
+
+<span class="fc" id="L74">      return result;</span>
+    } else {
+<span class="fc" id="L76">      Team[] teams = stringToTeamArray(result.getValue());</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">      if (teams.length == 0) {</span>
+<span class="fc" id="L78">        String msg = &quot;No team found: &quot; + name;</span>
+<span class="fc" id="L79">        return new SimpleEntry&lt;&gt;(CallResult.ERROR, msg);</span>
+      } else {
+<span class="fc" id="L81">        return new SimpleEntry&lt;&gt;(CallResult.SUCCESS, result.getValue());</span>
+      }
+    }
+  }
+
+  @Override
+  public Team[] stringToTeamArray(String string) {
+<span class="fc" id="L88">    Team[] teams = new Gson().fromJson(string, Team[].class);</span>
+<span class="fc" id="L89">    return teams;</span>
+  }
+
+  @Override
+  public Team stringToTeamOne(String string) {
+<span class="fc" id="L94">    Team[] teams = new Gson().fromJson(string, Team[].class);</span>
+<span class="fc" id="L95">    Team team = teams[0];</span>
+
+<span class="fc" id="L97">    return team;</span>
+  }
+
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; searchTeamUpcomingMatches(
+      String teamId, boolean cacheOverride) {
+<span class="fc" id="L103">    SimpleEntry&lt;CallResult, String&gt; result = chain.callMatch(teamId, cacheOverride);</span>
+
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">    if (result.getKey() == CallResult.ERROR || result.getKey() == CallResult.CACHEHIT) {</span>
+<span class="fc" id="L106">      return result;</span>
+    } else {
+<span class="fc" id="L108">      Match[] matches = stringToMatchArray(result.getValue());</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">      if (matches.length == 0) {</span>
+<span class="fc" id="L110">        String msg = &quot;No matches found&quot;;</span>
+<span class="fc" id="L111">        return new SimpleEntry&lt;&gt;(CallResult.ERROR, msg);</span>
+      } else {
+<span class="fc" id="L113">        return new SimpleEntry&lt;&gt;(CallResult.SUCCESS, result.getValue());</span>
+      }
+    }
+  }
+
+  @Override
+  public Match[] stringToMatchArray(String string) {
+<span class="fc" id="L120">    return new Gson().fromJson(string, Match[].class);</span>
+  }
+
+  @Override
+  public boolean validateInputTeamName(String input) {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    if (input.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L126">      return false;</span>
+    }
+<span class="fc" id="L128">    return true;</span>
+  }
+
+  /**
+   * Upload qrCode to output API imgur
+   *
+   * @param img
+   */
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; uploadImage(String img) {
+<span class="fc" id="L138">    ApiResponse response = outputApiCalls.postRequestImgurShortForm(img);</span>
+<span class="fc" id="L139">    SimpleEntry&lt;CallResult, String&gt; result = validateResponseOutputApi(response);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    if (result.getKey() == CallResult.SUCCESS) {</span>
+<span class="fc" id="L141">      ImgurData imgurData = stringToImgurData(result.getValue());</span>
+<span class="fc" id="L142">      result.setValue(imgurData.getData().getLink());</span>
+    }
+<span class="fc" id="L144">    return result;</span>
+  }
+
+  @Override
+  public ImgurData stringToImgurData(String string) {
+<span class="fc" id="L149">    return new Gson().fromJson(string, ImgurData.class);</span>
+  }
+
+  @Override
+  public BufferedImage createQR(String data) {
+    try {
+<span class="fc" id="L155">      String fileName = &quot;src/main/resources/&quot; + qrCodeSF;</span>
+<span class="fc" id="L156">      int width = 100;</span>
+<span class="fc" id="L157">      int height = 100;</span>
+
+      // generate QR code
+<span class="fc" id="L160">      QRCodeWriter qrCodeWriter = new QRCodeWriter();</span>
+<span class="fc" id="L161">      BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height);</span>
+<span class="fc" id="L162">      Path filePath = Paths.get(fileName);</span>
+<span class="fc" id="L163">      MatrixToImageWriter.writeToPath(bitMatrix, &quot;PNG&quot;, filePath);</span>
+
+<span class="fc" id="L165">      return MatrixToImageWriter.toBufferedImage(bitMatrix);</span>
+
+<span class="nc" id="L167">    } catch (WriterException | IOException e) {</span>
+<span class="nc" id="L168">      System.out.println(e.getMessage());</span>
+    }
+<span class="nc" id="L170">    return null;</span>
+  }
+
+  @Override
+  public String getQrCodeSF() {
+<span class="nc" id="L175">    return qrCodeSF;</span>
+  }
+
+  @Override
+  public String bufferedImageToB64(BufferedImage bi) {
+
+<span class="fc" id="L181">    java.io.ByteArrayOutputStream os = new ByteArrayOutputStream();</span>
+    try {
+<span class="fc" id="L183">      ImageIO.write(bi, &quot;png&quot;, os);</span>
+<span class="fc" id="L184">      String b64 = Base64.getEncoder().encodeToString(os.toByteArray());</span>
+<span class="fc" id="L185">      return b64;</span>
+<span class="nc" id="L186">    } catch (IOException e) {</span>
+<span class="nc" id="L187">      e.printStackTrace();</span>
+    }
+
+<span class="nc" id="L190">    return null;</span>
+  }
+
+  @Override
+  public boolean isInputIsOnline() {
+<span class="fc" id="L195">    return inputIsOnline;</span>
+  }
+
+  @Override
+  public boolean isOutputIsOnline() {
+<span class="fc" id="L200">    return outputIsOnline;</span>
+  }
+
+  @Override
+  public InputApiCalls getInputApiCalls() {
+<span class="fc" id="L205">    return inputApiCalls;</span>
+  }
+
+  @Override
+  public void setInputApiCalls(InputApiCalls inputApiCalls) {
+<span class="fc" id="L210">    this.inputApiCalls = inputApiCalls;</span>
+<span class="fc" id="L211">  }</span>
+
+  @Override
+  public OutputApiCalls getOutputApiCalls() {
+<span class="fc" id="L215">    return outputApiCalls;</span>
+  }
+
+  @Override
+  public void setOutputApiCalls(OutputApiCalls outputApiCalls) {
+<span class="fc" id="L220">    this.outputApiCalls = outputApiCalls;</span>
+<span class="fc" id="L221">  }</span>
+
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; validateResponseOutputApi(ApiResponse response) {
+    SimpleEntry&lt;CallResult, String&gt; result;
+<span class="fc" id="L226">    int statusCode = response.getStatusCode();</span>
+<span class="fc" id="L227">    String body = response.getBody();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">    if (statusCode == 200) {</span>
+<span class="fc" id="L229">      result = new SimpleEntry&lt;&gt;(CallResult.SUCCESS, body);</span>
+    } else {
+<span class="fc" id="L231">      ErrorResponseOutput ero = new Gson().fromJson(body, ErrorResponseOutput.class);</span>
+<span class="fc" id="L232">      String msg = ero.getData().getError();</span>
+<span class="fc" id="L233">      result = new SimpleEntry&lt;&gt;(CallResult.ERROR, msg);</span>
+    }
+
+<span class="fc" id="L236">    return result;</span>
+  }
+
+  @Override
+  public Integer getCurrentTeamId() {
+<span class="nc" id="L241">    return currentTeamId;</span>
+  }
+
+  @Override
+  public void setCurrentTeamId(Integer currentTeamId) {
+<span class="nc" id="L246">    this.currentTeamId = currentTeamId;</span>
+<span class="nc" id="L247">  }</span>
+
+  @Override
+  public Caller getChain() {
+<span class="nc" id="L251">    return chain;</span>
+  }
+
+  @Override
+  public Caller getApiCaller() {
+<span class="fc" id="L256">    return apiCaller;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

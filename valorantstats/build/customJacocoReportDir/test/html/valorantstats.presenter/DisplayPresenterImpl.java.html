@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DisplayPresenterImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.presenter</a> &gt; <span class="el_source">DisplayPresenterImpl.java</span></div><h1>DisplayPresenterImpl.java</h1><pre class="source lang-java linenums">package valorantstats.presenter;
+
+import javafx.concurrent.Task;
+import javafx.scene.paint.Color;
+import valorantstats.model.HistoryItem;
+import valorantstats.model.ModelFacade;
+import valorantstats.model.WitItem;
+import valorantstats.model.enums.*;
+import valorantstats.model.jsonobjects.Match;
+import valorantstats.model.jsonobjects.Team;
+import valorantstats.view.*;
+
+import java.awt.image.BufferedImage;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/** Implementation of DisplayPresenter to manage user interaction and concurrency */
+public class DisplayPresenterImpl implements DisplayPresenter {
+
+  private static final int NUM_THREADS = 4;
+<span class="nc" id="L23">  private final ExecutorService pool =</span>
+<span class="nc" id="L24">      Executors.newFixedThreadPool(</span>
+          NUM_THREADS,
+          runnable -&gt; {
+<span class="nc" id="L27">            Thread thread = new Thread(runnable);</span>
+<span class="nc" id="L28">            thread.setDaemon(true);</span>
+<span class="nc" id="L29">            return thread;</span>
+          });
+  private final SplashPage splashPage;
+  private final LoginPage loginPage;
+  private final PersonalisationPageImpl personalisationPage;
+  private final SearchPage searchPageSlow;
+  private final SearchPage searchPageFast;
+  private final WitDisplay witDisplay;
+  ModelFacade model;
+  Display display;
+  private SearchPage searchPage;
+
+  public DisplayPresenterImpl(
+      ModelFacade model,
+      Display display,
+      SplashPage splashPage,
+      LoginPage loginPage,
+      PersonalisationPageImpl personalisationPage,
+      SearchPage searchPage,
+      WitDisplay witDisplay,
+<span class="nc" id="L49">      SearchPage searchPageFast) {</span>
+<span class="nc" id="L50">    this.model = model;</span>
+<span class="nc" id="L51">    this.display = display;</span>
+<span class="nc" id="L52">    this.splashPage = splashPage;</span>
+<span class="nc" id="L53">    this.loginPage = loginPage;</span>
+<span class="nc" id="L54">    this.personalisationPage = personalisationPage;</span>
+<span class="nc" id="L55">    this.searchPage = searchPage;</span>
+<span class="nc" id="L56">    this.searchPageSlow = searchPage;</span>
+<span class="nc" id="L57">    this.searchPageFast = searchPageFast;</span>
+<span class="nc" id="L58">    this.witDisplay = witDisplay;</span>
+
+<span class="nc" id="L60">    model.addObserverBackend(this);</span>
+<span class="nc" id="L61">    model.addObserverPers(this);</span>
+
+<span class="nc" id="L63">    display.setDisplayPresenter(this);</span>
+<span class="nc" id="L64">    splashPage.setDisplayPresenter(this);</span>
+<span class="nc" id="L65">    loginPage.setDisplayPresenter(this);</span>
+<span class="nc" id="L66">    personalisationPage.setDisplayPresenter(this);</span>
+<span class="nc" id="L67">    witDisplay.setDisplayPresenter(this);</span>
+
+<span class="nc" id="L69">    display.displayScene();</span>
+<span class="nc" id="L70">    display.showSplashPage();</span>
+<span class="nc" id="L71">  }</span>
+
+  @Override
+  public void update() {
+<span class="nc" id="L75">    List&lt;HistoryItem&gt; historyList = model.getHistory();</span>
+<span class="nc" id="L76">    String colorString = model.getAllComponentColors();</span>
+<span class="nc" id="L77">    display.update(historyList, colorString);</span>
+<span class="nc" id="L78">  }</span>
+
+  @Override
+  public void goBackAction() {
+<span class="nc" id="L82">    HistoryItem back = model.getBackHistory();</span>
+<span class="nc" id="L83">    model.storeBreadcrumb(model.breadCrumbString(), model.getCurrentHistoryIndex());</span>
+<span class="nc" id="L84">    historyActions(back);</span>
+<span class="nc" id="L85">  }</span>
+
+  @Override
+  public void breadcrumbClickAction(HistoryItem historyItem, int finalIndex) {
+<span class="nc" id="L89">    model.setCurrentHistoryIndex(finalIndex);</span>
+<span class="nc" id="L90">    model.storeBreadcrumb(model.breadCrumbString(), model.getCurrentHistoryIndex());</span>
+<span class="nc" id="L91">    historyActions(historyItem);</span>
+<span class="nc" id="L92">  }</span>
+
+  @Override
+  public void historyActions(HistoryItem historyItem) {
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    if (historyItem.getSearchType() == SearchType.TEAM) {</span>
+<span class="nc" id="L98">      display.searchTeamAction();</span>
+<span class="nc" id="L99">      SimpleEntry&lt;CallResult, String&gt; result = historyItem.getSearchResult();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">      if (result.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L101">        model.setCurrentTeamId(null);</span>
+<span class="nc" id="L102">        searchPage.displaySearchTeamError(result);</span>
+<span class="nc" id="L103">        return;</span>
+      }
+<span class="nc" id="L105">      Team team = model.stringToTeamOne(result.getValue());</span>
+<span class="nc" id="L106">      searchPage.displaySearchTeam(team, model.getHighlightColor());</span>
+<span class="nc" id="L107">      model.setCurrentTeamId(team.getId());</span>
+<span class="nc" id="L108">      searchPage.displaySearchTeam(team, model.getHighlightColor());</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    } else if (historyItem.getSearchType() == SearchType.TEAMMATCH) {</span>
+<span class="nc" id="L110">      display.searchTeamAction();</span>
+<span class="nc" id="L111">      SimpleEntry&lt;CallResult, String&gt; matchResult = historyItem.getSearchResult();</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">      if (matchResult.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L114">        searchPage.displayHandleTeamMatchesClickError(matchResult);</span>
+<span class="nc" id="L115">        return;</span>
+      }
+<span class="nc" id="L117">      Match[] match = model.stringToMatchArray(matchResult.getValue());</span>
+<span class="nc" id="L118">      searchPage.displayHandleTeamMatchesClick(match, model.getHighlightColor());</span>
+    }
+<span class="nc" id="L120">  }</span>
+
+  @Override
+  public void showHomePage() {
+<span class="nc" id="L124">    display.homeAction();</span>
+<span class="nc" id="L125">    display.buildUploadImagePane();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    if (model.getHistory().size() &lt; 1) {</span>
+<span class="nc" id="L127">      display.setDisableUploadImageButton(true);</span>
+    }
+<span class="nc" id="L129">  }</span>
+
+  @Override
+  public void showAboutPage() {
+<span class="nc" id="L133">    display.buildAboutPane(model.getAppName(), model.getName(), model.getReferences());</span>
+<span class="nc" id="L134">    display.aboutAction();</span>
+<span class="nc" id="L135">  }</span>
+
+  @Override
+  public void showSearchPage() {
+<span class="nc" id="L139">    display.searchTeamAction();</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    if (!model.isInputIsOnline()) {</span>
+<span class="nc" id="L141">      searchPage.setBtnClearCacheDisable(true);</span>
+    }
+<span class="nc" id="L143">  }</span>
+
+  @Override
+  public void showPersonalisationPage() {
+<span class="nc" id="L147">    personalisationPage.buildPreviewPane(model.getHighlightColor());</span>
+<span class="nc" id="L148">    display.personalisationAction();</span>
+<span class="nc" id="L149">  }</span>
+
+  @Override
+  public void showLoginPage() {
+<span class="nc" id="L153">    display.showLoginPage();</span>
+<span class="nc" id="L154">  }</span>
+
+  @Override
+  public void showExistingAccountPage() {
+<span class="nc" id="L158">    loginPage.existingAccount();</span>
+<span class="nc" id="L159">  }</span>
+
+  @Override
+  public void showNewAccountPage() {
+<span class="nc" id="L163">    loginPage.newAccount();</span>
+<span class="nc" id="L164">  }</span>
+
+  @Override
+  public void uploadImageAction() {
+
+<span class="nc" id="L169">    String report = model.shortFormReportString();</span>
+<span class="nc" id="L170">    BufferedImage bi = model.createQR(report);</span>
+
+<span class="nc" id="L172">    Task&lt;SimpleEntry&lt;CallResult, String&gt;&gt; taskUpload =</span>
+<span class="nc" id="L173">        createUploadImageTask(model.bufferedImageToB64(bi));</span>
+<span class="nc" id="L174">    taskUpload.setOnSucceeded(</span>
+        event1 -&gt; {
+<span class="nc bnc" id="L176" title="All 2 branches missed.">          if (taskUpload.getValue().getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L177">            display.buildUploadImagePane();</span>
+<span class="nc" id="L178">            display.displayUploadImageError(report, bi, taskUpload.getValue().getValue());</span>
+          } else {
+<span class="nc" id="L180">            display.buildUploadImagePane();</span>
+<span class="nc" id="L181">            display.displayUploadImageSuccess(report, bi, taskUpload.getValue().getValue());</span>
+          }
+<span class="nc" id="L183">        });</span>
+<span class="nc" id="L184">    pool.execute(taskUpload);</span>
+<span class="nc" id="L185">  }</span>
+
+  @Override
+  public Task&lt;SimpleEntry&lt;CallResult, String&gt;&gt; createUploadImageTask(String imgData) {
+<span class="nc" id="L189">    Task&lt;SimpleEntry&lt;CallResult, String&gt;&gt; task =</span>
+<span class="nc" id="L190">        new Task&lt;&gt;() {</span>
+          @Override
+          public SimpleEntry&lt;CallResult, String&gt; call() throws Exception {
+<span class="nc" id="L193">            SimpleEntry&lt;CallResult, String&gt; result = model.uploadImage(imgData);</span>
+<span class="nc" id="L194">            return result;</span>
+          }
+        };
+<span class="nc" id="L197">    return task;</span>
+  }
+
+  @Override
+  public void existingAccountSubmitAction(String username, String password) {
+<span class="nc bnc" id="L202" title="All 4 branches missed.">    if (username.equals(&quot;&quot;) || password.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L203">      loginPage.accountAlert(&quot;Username or password can't be empty&quot;);</span>
+<span class="nc" id="L204">      return;</span>
+    }
+
+<span class="nc" id="L207">    CallResult result = model.verifyExistingAccount(username, password);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    if (result.equals(CallResult.SUCCESS)) {</span>
+<span class="nc" id="L209">      model.setCurrentUser(username);</span>
+<span class="nc" id="L210">      List&lt;HistoryItem&gt; breadcrumb = model.retrieveBreadcrumb();</span>
+<span class="nc" id="L211">      model.setHistory(breadcrumb);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">      if (breadcrumb.size() &gt; 0) {</span>
+<span class="nc" id="L213">        int breadCrumbIndex = model.getBreadcrumbIndex();</span>
+<span class="nc" id="L214">        historyActions(breadcrumb.get(breadCrumbIndex));</span>
+<span class="nc" id="L215">        model.setCurrentHistoryIndex(breadCrumbIndex);</span>
+<span class="nc" id="L216">      } else {</span>
+<span class="nc" id="L217">        showHomePage();</span>
+      }
+<span class="nc" id="L219">    } else {</span>
+<span class="nc" id="L220">      loginPage.accountAlert(&quot;Account not found&quot;);</span>
+<span class="nc" id="L221">      return;</span>
+    }
+<span class="nc" id="L223">  }</span>
+
+  @Override
+  public void newAccountSubmitAction(String username, String password) {
+<span class="nc bnc" id="L227" title="All 4 branches missed.">    if (username.equals(&quot;&quot;) || password.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L228">      loginPage.accountAlert(&quot;Username or password can't be empty&quot;);</span>
+<span class="nc" id="L229">      return;</span>
+    }
+<span class="nc" id="L231">    CallResult result = model.createNewAccount(username, password);</span>
+
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (result.equals(CallResult.SUCCESS)) {</span>
+<span class="nc" id="L234">      model.setCurrentUser(username);</span>
+
+<span class="nc" id="L236">      personalisationPage.updateBackgroundColorString(Color.web(&quot;#364966&quot;));</span>
+<span class="nc" id="L237">      personalisationPage.updateTextColorString(Color.WHITE);</span>
+<span class="nc" id="L238">      personalisationPage.updateButtonColorString(Color.web(&quot;#dc3d4b&quot;));</span>
+<span class="nc" id="L239">      personalisationPage.updateHighlightColorString(Color.web(&quot;#b78460&quot;));</span>
+<span class="nc" id="L240">      showPersonalisationPage();</span>
+<span class="nc" id="L241">      model.storeBreadcrumb(model.breadCrumbString(), model.getCurrentHistoryIndex());</span>
+
+    } else {
+<span class="nc" id="L244">      loginPage.accountAlert(&quot;Username already exists&quot;);</span>
+    }
+<span class="nc" id="L246">  }</span>
+
+  @Override
+  public void showLoginChoicePage() {
+<span class="nc" id="L250">    loginPage.loginChoice();</span>
+<span class="nc" id="L251">  }</span>
+
+  @Override
+  public void updateBackgroundColor(String colorString) {
+<span class="nc" id="L255">    model.updateBackgroundColor(colorString);</span>
+<span class="nc" id="L256">  }</span>
+
+  @Override
+  public void updateTextColor(String colorString) {
+<span class="nc" id="L260">    model.updateTextColor(colorString);</span>
+<span class="nc" id="L261">  }</span>
+
+  @Override
+  public void updateButtonColor(String colorString) {
+<span class="nc" id="L265">    model.updateButtonColor(colorString);</span>
+<span class="nc" id="L266">  }</span>
+
+  @Override
+  public void updateHighlightColor(String colorString) {
+<span class="nc" id="L270">    model.updateHighlightColor(colorString);</span>
+<span class="nc" id="L271">  }</span>
+
+  @Override
+  public void witButtonAction(String input) {
+<span class="nc bnc" id="L275" title="All 2 branches missed.">    if (input.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L276">      witDisplay.errorAlert(&quot;Input can't be empty&quot;);</span>
+<span class="nc" id="L277">      return;</span>
+    }
+<span class="nc" id="L279">    Task&lt;WitItem&gt; witMessageTask = createWitMessageTask(input);</span>
+<span class="nc" id="L280">    witMessageTask.setOnSucceeded(</span>
+        event1 -&gt; {
+<span class="nc" id="L282">          witAction(witMessageTask.getValue());</span>
+<span class="nc" id="L283">        });</span>
+<span class="nc" id="L284">    pool.execute(witMessageTask);</span>
+<span class="nc" id="L285">  }</span>
+
+  @Override
+  public void witAction(WitItem witItem) {
+
+<span class="nc bnc" id="L290" title="All 2 branches missed.">    if (witItem.getCallResult() == CallResult.ERROR) {</span>
+<span class="nc" id="L291">      witDisplay.errorAlert(witItem.getErrorMsg());</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">    } else if (witItem.getIntent() == MsgIntent.CHANGECOLOUR) {</span>
+<span class="nc" id="L293">      ComponentType component = witItem.getComponentEntity();</span>
+<span class="nc" id="L294">      String colourString = witItem.getColourEntity();</span>
+      Color color;
+      try {
+<span class="nc" id="L297">        color = Color.web(colourString);</span>
+<span class="nc" id="L298">      } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L299">        witDisplay.errorAlert(&quot;Not a valid color&quot;);</span>
+<span class="nc" id="L300">        return;</span>
+<span class="nc" id="L301">      }</span>
+
+<span class="nc bnc" id="L303" title="All 2 branches missed.">      if (component.equals(ComponentType.BACKGROUND)) {</span>
+<span class="nc" id="L304">        personalisationPage.updateBackgroundColorString(color);</span>
+      }
+<span class="nc bnc" id="L306" title="All 2 branches missed.">      if (component.equals(ComponentType.TEXT)) {</span>
+<span class="nc" id="L307">        personalisationPage.updateTextColorString(color);</span>
+      }
+<span class="nc bnc" id="L309" title="All 2 branches missed.">      if (component.equals(ComponentType.BUTTON)) {</span>
+<span class="nc" id="L310">        personalisationPage.updateButtonColorString(color);</span>
+      }
+<span class="nc bnc" id="L312" title="All 2 branches missed.">      if (component.equals(ComponentType.HIGHLIGHT)) {</span>
+<span class="nc" id="L313">        personalisationPage.updateHighlightColorString(color);</span>
+      }
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    } else if (witItem.getIntent() == MsgIntent.NAVIGATE) {</span>
+<span class="nc" id="L316">      PageType page = witItem.getPageEntity();</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">      if (page.equals(PageType.SEARCH)) {</span>
+<span class="nc" id="L318">        showSearchPage();</span>
+      }
+<span class="nc bnc" id="L320" title="All 2 branches missed.">      if (page.equals(PageType.PERSONALISE)) {</span>
+<span class="nc" id="L321">        showPersonalisationPage();</span>
+      }
+<span class="nc bnc" id="L323" title="All 2 branches missed.">      if (page.equals(PageType.ABOUT)) {</span>
+<span class="nc" id="L324">        showAboutPage();</span>
+      }
+<span class="nc bnc" id="L326" title="All 2 branches missed.">      if (page.equals(PageType.HOME)) {</span>
+<span class="nc" id="L327">        showHomePage();</span>
+      }
+
+<span class="nc bnc" id="L330" title="All 2 branches missed.">    } else if (witItem.getIntent() == MsgIntent.SEARCHTEAM) {</span>
+<span class="nc" id="L331">      String teamName = witItem.getTeamNameEntity();</span>
+<span class="nc" id="L332">      showSearchPage();</span>
+<span class="nc" id="L333">      searchPage.searchTeam(teamName);</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">    } else if (witItem.getIntent() == MsgIntent.SEARCHMATCHES) {</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">      if (model.getCurrentTeamId() == null) {</span>
+<span class="nc" id="L336">        witDisplay.errorAlert(&quot;search for a valid team first&quot;);</span>
+      } else {
+<span class="nc" id="L338">        showSearchPage();</span>
+<span class="nc" id="L339">        searchPage.handleTeamMatchesClick(model.getCurrentTeamId().toString());</span>
+      }
+<span class="nc bnc" id="L341" title="All 2 branches missed.">    } else if (witItem.getIntent() == MsgIntent.UPLOADIMAGE) {</span>
+<span class="nc" id="L342">      showHomePage();</span>
+<span class="nc" id="L343">      display.activateBtnUploadImage();</span>
+    } else {
+<span class="nc" id="L345">      witDisplay.errorAlert(&quot;No valid action found&quot;);</span>
+    }
+<span class="nc" id="L347">  }</span>
+
+  @Override
+  public Task&lt;WitItem&gt; createWitMessageTask(String input) {
+<span class="nc" id="L351">    return new Task&lt;WitItem&gt;() {</span>
+      @Override
+      public WitItem call() throws Exception {
+<span class="nc" id="L354">        WitItem witItem = model.retrieveSentenceMeaning(input);</span>
+<span class="nc" id="L355">        return witItem;</span>
+      }
+    };
+  }
+
+  @Override
+  public void setFastMode(boolean selected, boolean isSwitch) {
+<span class="nc" id="L362">    model.setFastMode(selected);</span>
+
+<span class="nc" id="L364">    boolean onSearchPage = false;</span>
+
+    // check if the currently displayed page is the search page
+<span class="nc bnc" id="L367" title="All 2 branches missed.">    if (display.getMainPane().getCenter() == searchPage.getSearchPane()) {</span>
+<span class="nc" id="L368">      onSearchPage = true;</span>
+    }
+
+    // if selected, fast mode is on
+<span class="nc bnc" id="L372" title="All 2 branches missed.">    if (selected) {</span>
+<span class="nc" id="L373">      this.searchPage = searchPageFast;</span>
+<span class="nc" id="L374">      display.setSearchPage(searchPageFast);</span>
+<span class="nc" id="L375">      display.updateFastModeSwitch(&quot;Fast Mode: On&quot;, true, isSwitch);</span>
+    } else {
+<span class="nc" id="L377">      this.searchPage = searchPageSlow;</span>
+<span class="nc" id="L378">      display.setSearchPage(searchPageSlow);</span>
+<span class="nc" id="L379">      display.updateFastModeSwitch(&quot;Fast Mode: Off&quot;, false, isSwitch);</span>
+    }
+<span class="nc bnc" id="L381" title="All 2 branches missed.">    if (onSearchPage) {</span>
+<span class="nc" id="L382">      display.searchTeamAction();</span>
+    }
+<span class="nc" id="L384">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CallManagerOnlineApiTest" tests="26" skipped="0" failures="0" errors="0" timestamp="2023-09-30T08:17:16" hostname="MacBook-AX.local" time="0.505">
+  <properties/>
+  <testcase name="searchTeamEmpty()" classname="CallManagerOnlineApiTest" time="0.008"/>
+  <testcase name="searchTeamValid()" classname="CallManagerOnlineApiTest" time="0.005"/>
+  <testcase name="teamFalseCacheOverrideCacheHit()" classname="CallManagerOnlineApiTest" time="0.002"/>
+  <testcase name="matchFalseCacheOverrideCacheHit()" classname="CallManagerOnlineApiTest" time="0.003"/>
+  <testcase name="gsonParsingTeamsNoTeams()" classname="CallManagerOnlineApiTest" time="0.012"/>
+  <testcase name="validateUserInput()" classname="CallManagerOnlineApiTest" time="0.006"/>
+  <testcase name="searchTeamInvalid()" classname="CallManagerOnlineApiTest" time="0.006"/>
+  <testcase name="searchTeamNoInput()" classname="CallManagerOnlineApiTest" time="0.002"/>
+  <testcase name="gsonParsingTeamOne()" classname="CallManagerOnlineApiTest" time="0.008"/>
+  <testcase name="gsonParsingTeams()" classname="CallManagerOnlineApiTest" time="0.009"/>
+  <testcase name="teamTrueCacheOverrideCacheMiss()" classname="CallManagerOnlineApiTest" time="0.006"/>
+  <testcase name="searchTeamForbidden()" classname="CallManagerOnlineApiTest" time="0.006"/>
+  <testcase name="matchTrueCacheOverrideCacheMiss()" classname="CallManagerOnlineApiTest" time="0.008"/>
+  <testcase name="searchTeamUpcomingMatchesNoMatches()" classname="CallManagerOnlineApiTest" time="0.007"/>
+  <testcase name="uploadImageBadRequest()" classname="CallManagerOnlineApiTest" time="0.005"/>
+  <testcase name="searchTeamUnprocessableEntity()" classname="CallManagerOnlineApiTest" time="0.005"/>
+  <testcase name="gsonParsingTeamsNoMatches()" classname="CallManagerOnlineApiTest" time="0.004"/>
+  <testcase name="searchTeamNotFound()" classname="CallManagerOnlineApiTest" time="0.003"/>
+  <testcase name="searchTeamBadRequest()" classname="CallManagerOnlineApiTest" time="0.005"/>
+  <testcase name="uploadImage()" classname="CallManagerOnlineApiTest" time="0.004"/>
+  <testcase name="gsonParsingMatches()" classname="CallManagerOnlineApiTest" time="0.003"/>
+  <testcase name="searchTeamUnauthorised()" classname="CallManagerOnlineApiTest" time="0.002"/>
+  <testcase name="teamFalseCacheOverrideCacheMiss()" classname="CallManagerOnlineApiTest" time="0.003"/>
+  <testcase name="createQR()" classname="CallManagerOnlineApiTest" time="0.344"/>
+  <testcase name="matchFalseCacheOverrideCacheMiss()" classname="CallManagerOnlineApiTest" time="0.01"/>
+  <testcase name="searchTeamUpcomingMatchesValid()" classname="CallManagerOnlineApiTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

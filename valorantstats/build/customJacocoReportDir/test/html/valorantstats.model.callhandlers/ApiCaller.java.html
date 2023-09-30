@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiCaller.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.callhandlers</a> &gt; <span class="el_source">ApiCaller.java</span></div><h1>ApiCaller.java</h1><pre class="source lang-java linenums">package valorantstats.model.callhandlers;
+
+import valorantstats.model.CacheManager;
+import valorantstats.model.apicalls.ApiResponse;
+import valorantstats.model.apicalls.InputApiCalls;
+import valorantstats.model.enums.CallResult;
+
+import java.util.AbstractMap.SimpleEntry;
+
+/** Calls the real or dummy api methods to search for a team or match */
+public class ApiCaller extends Caller {
+
+  public ApiCaller(CacheManager cacheManager, InputApiCalls inputApiCalls) {
+<span class="fc" id="L14">    super(cacheManager, inputApiCalls);</span>
+<span class="fc" id="L15">  }</span>
+
+  /**
+   * Calls a request for a team name, validates the api response, inserts/updates cache database
+   *
+   * @param name team name to retrieve information for
+   * @param cacheOverride true indicates to update database entry, false indicates to insert a new
+   *     database entry
+   * @return CallResult - either success or error depending on api call, String - either information
+   *     for team or error message
+   */
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; callTeam(String name, boolean cacheOverride) {
+<span class="fc" id="L28">    ApiResponse response = inputApiCalls.getRequestTeam(name);</span>
+<span class="fc" id="L29">    SimpleEntry&lt;CallResult, String&gt; result = validateResponseInputApi(response);</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">    if (cacheOverride) {</span>
+<span class="fc" id="L31">      cacheManager.updateCacheTeam(name, result.getValue());</span>
+    } else {
+<span class="fc" id="L33">      cacheManager.cacheTeam(name, result.getValue());</span>
+    }
+<span class="fc" id="L35">    return result;</span>
+  }
+
+  /**
+   * * Calls a request for a team id, validates the api response, inserts/updates cache database
+   *
+   * @param name team id representing a team
+   * @param cacheOverride true indicates to update database entry, false indicates to insert a new
+   *     database entry
+   * @return CallResult - either success or error depending on api call, String - either information
+   *     for team or error message
+   */
+  @Override
+  public SimpleEntry&lt;CallResult, String&gt; callMatch(String name, boolean cacheOverride) {
+<span class="fc" id="L49">    ApiResponse response = inputApiCalls.getRequestTeamUpcomingMatches(name);</span>
+<span class="fc" id="L50">    SimpleEntry&lt;CallResult, String&gt; result = validateResponseInputApi(response);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    if (cacheOverride) {</span>
+<span class="fc" id="L52">      cacheManager.updateCacheMatch(name, result.getValue());</span>
+    } else {
+<span class="fc" id="L54">      cacheManager.cacheMatch(name, result.getValue());</span>
+    }
+<span class="fc" id="L56">    return result;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

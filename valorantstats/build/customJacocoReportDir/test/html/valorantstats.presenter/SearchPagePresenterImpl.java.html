@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchPagePresenterImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.presenter</a> &gt; <span class="el_source">SearchPagePresenterImpl.java</span></div><h1>SearchPagePresenterImpl.java</h1><pre class="source lang-java linenums">package valorantstats.presenter;
+
+import javafx.concurrent.Task;
+import valorantstats.model.HistoryItem;
+import valorantstats.model.ModelFacade;
+import valorantstats.model.enums.CallResult;
+import valorantstats.model.enums.SearchType;
+import valorantstats.model.jsonobjects.Match;
+import valorantstats.model.jsonobjects.Team;
+import valorantstats.view.SearchPage;
+
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/** Implementation of SearchPagePresenter to handle user searches */
+public class SearchPagePresenterImpl implements SearchPagePresenter {
+
+  private static final int NUM_THREADS = 4;
+  private final ModelFacade model;
+<span class="nc" id="L23">  private final ExecutorService pool =</span>
+<span class="nc" id="L24">      Executors.newFixedThreadPool(</span>
+          NUM_THREADS,
+          runnable -&gt; {
+<span class="nc" id="L27">            Thread thread = new Thread(runnable);</span>
+<span class="nc" id="L28">            thread.setDaemon(true);</span>
+<span class="nc" id="L29">            return thread;</span>
+          });
+  private final SearchPage searchPageSlow;
+  private final SearchPage searchPageFast;
+  private SearchPage searchPage;
+
+  public SearchPagePresenterImpl(
+<span class="nc" id="L36">      ModelFacade model, SearchPage searchPage, SearchPage searchPageFast) {</span>
+<span class="nc" id="L37">    this.model = model;</span>
+<span class="nc" id="L38">    this.searchPage = searchPage;</span>
+<span class="nc" id="L39">    this.searchPageSlow = searchPage;</span>
+<span class="nc" id="L40">    this.searchPageFast = searchPageFast;</span>
+<span class="nc" id="L41">    searchPage.setSearchPagePresenter(this);</span>
+<span class="nc" id="L42">    searchPageFast.setSearchPagePresenter(this);</span>
+
+<span class="nc" id="L44">    model.addObserverBackend(this);</span>
+<span class="nc" id="L45">  }</span>
+
+  @Override
+  public void update() {
+<span class="nc" id="L49">    searchPage.setBtnSearch(false);</span>
+<span class="nc" id="L50">    boolean fastMode = model.getFastMode();</span>
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (fastMode) {</span>
+<span class="nc" id="L53">      this.searchPage = searchPageFast;</span>
+    } else {
+<span class="nc" id="L55">      this.searchPage = searchPageSlow;</span>
+    }
+<span class="nc" id="L57">    List&lt;HistoryItem&gt; historyItemList = model.getHistory();</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (historyItemList.size() != 0) {</span>
+<span class="nc" id="L59">      int currentHistoryIndex = model.getCurrentHistoryIndex();</span>
+<span class="nc" id="L60">      HistoryItem historyItem = historyItemList.get(currentHistoryIndex);</span>
+<span class="nc" id="L61">      SimpleEntry&lt;CallResult, String&gt; result = historyItem.getSearchResult();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (result.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L63">        searchPage.clearPane();</span>
+<span class="nc" id="L64">        return;</span>
+      }
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      if (historyItem.getSearchType() == SearchType.TEAM) {</span>
+<span class="nc" id="L67">        Team team = model.stringToTeamOne(result.getValue());</span>
+<span class="nc" id="L68">        searchPage.displaySearchTeam(team, model.getHighlightColor());</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">      } else if (historyItem.getSearchType() == SearchType.TEAMMATCH) {</span>
+<span class="nc" id="L70">        Match[] match = model.stringToMatchArray(result.getValue());</span>
+<span class="nc" id="L71">        searchPage.displayHandleTeamMatchesClick(match, model.getHighlightColor());</span>
+      }
+    }
+<span class="nc" id="L74">  }</span>
+
+  @Override
+  public void searchTeamInput(String input, boolean cacheOverride) {
+<span class="nc" id="L78">    searchPage.clearSearchTextField();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    if (input.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L80">      searchPage.searchAlert(&quot;Input can't be empty&quot;);</span>
+<span class="nc" id="L81">      return;</span>
+    }
+<span class="nc" id="L83">    runSearchTeamTask(input, cacheOverride);</span>
+<span class="nc" id="L84">  }</span>
+
+  @Override
+  public void runSearchTeamTask(String name, boolean cacheOverride) {
+<span class="nc" id="L88">    searchPage.setBtnSearch(true);</span>
+<span class="nc" id="L89">    Task&lt;AbstractMap.SimpleEntry&lt;CallResult, String&gt;&gt; task =</span>
+<span class="nc" id="L90">        new Task&lt;AbstractMap.SimpleEntry&lt;CallResult, String&gt;&gt;() {</span>
+          @Override
+          public AbstractMap.SimpleEntry&lt;CallResult, String&gt; call() throws Exception {
+<span class="nc" id="L93">            AbstractMap.SimpleEntry&lt;CallResult, String&gt; result =</span>
+<span class="nc" id="L94">                model.searchTeam(name, cacheOverride);</span>
+<span class="nc" id="L95">            return result;</span>
+          }
+        };
+
+<span class="nc" id="L99">    pool.execute(task);</span>
+<span class="nc" id="L100">    task.setOnSucceeded(</span>
+        (event) -&gt; {
+<span class="nc" id="L102">          searchPage.setBtnSearch(false);</span>
+
+<span class="nc" id="L104">          AbstractMap.SimpleEntry&lt;CallResult, String&gt; result = task.getValue();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">          if (result.getKey() == CallResult.CACHEHIT) {</span>
+<span class="nc" id="L106">            result = model.teamVerifyCachedResult(result);</span>
+<span class="nc" id="L107">            searchPage.processSearchTeamCacheHit(name, result);</span>
+<span class="nc" id="L108">            return;</span>
+          }
+<span class="nc" id="L110">          updateTeamModelStates(name, result);</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">          if (result.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L113">            model.setCurrentTeamId(null);</span>
+<span class="nc" id="L114">            searchPage.displaySearchTeamError(result);</span>
+<span class="nc" id="L115">            return;</span>
+          }
+<span class="nc" id="L117">          Team team = model.stringToTeamOne(result.getValue());</span>
+<span class="nc" id="L118">          searchPage.displaySearchTeam(team, model.getHighlightColor());</span>
+<span class="nc" id="L119">          model.setCurrentTeamId(team.getId());</span>
+<span class="nc" id="L120">        });</span>
+<span class="nc" id="L121">  }</span>
+
+  @Override
+  public void updateTeamModelStates(String name, SimpleEntry&lt;CallResult, String&gt; result) {
+<span class="nc" id="L125">    model.updateCurrentTeamOrMatch(result);</span>
+<span class="nc" id="L126">    model.addHistory(SearchType.TEAM, name, result);</span>
+<span class="nc" id="L127">    model.updateUserStateDB(model.breadCrumbString(), model.getCurrentHistoryIndex(), result);</span>
+<span class="nc" id="L128">  }</span>
+
+  @Override
+  public void updateMatchModelStates(String name, SimpleEntry&lt;CallResult, String&gt; result) {
+<span class="nc" id="L132">    model.updateCurrentTeamOrMatch(result);</span>
+<span class="nc" id="L133">    model.addHistory(SearchType.TEAMMATCH, name, result);</span>
+<span class="nc" id="L134">    model.updateUserStateDB(model.breadCrumbString(), model.getCurrentHistoryIndex(), result);</span>
+<span class="nc" id="L135">  }</span>
+
+  @Override
+  public void clearCache() {
+<span class="nc" id="L139">    model.clearCache();</span>
+<span class="nc" id="L140">    searchPage.showCacheAlert();</span>
+<span class="nc" id="L141">  }</span>
+
+  @Override
+  public void teamCacheOptionAction(String name, SimpleEntry&lt;CallResult, String&gt; result) {
+
+<span class="nc" id="L146">    updateTeamModelStates(name, result);</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">    if (result.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L148">      model.setCurrentTeamId(null);</span>
+<span class="nc" id="L149">      searchPage.displaySearchTeamError(result);</span>
+<span class="nc" id="L150">      return;</span>
+    }
+<span class="nc" id="L152">    Team team = model.stringToTeamOne(result.getValue());</span>
+<span class="nc" id="L153">    searchPage.displaySearchTeam(team, model.getHighlightColor());</span>
+<span class="nc" id="L154">    model.setCurrentTeamId(team.getId());</span>
+<span class="nc" id="L155">  }</span>
+
+  // Match actions
+
+  @Override
+  public void matchCacheOptionAction(String name, SimpleEntry&lt;CallResult, String&gt; result) {
+<span class="nc" id="L161">    updateMatchModelStates(name, result);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (result.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L163">      searchPage.displayHandleTeamMatchesClickError(result);</span>
+    }
+<span class="nc" id="L165">    Match[] matches = model.stringToMatchArray(result.getValue());</span>
+<span class="nc" id="L166">    searchPage.displayHandleTeamMatchesClick(matches, model.getHighlightColor());</span>
+<span class="nc" id="L167">  }</span>
+
+  @Override
+  public void runSearchMatchTask(String name, boolean cacheOverride) {
+<span class="nc" id="L171">    Task&lt;AbstractMap.SimpleEntry&lt;CallResult, String&gt;&gt; task =</span>
+<span class="nc" id="L172">        new Task&lt;SimpleEntry&lt;CallResult, String&gt;&gt;() {</span>
+          @Override
+          public SimpleEntry&lt;CallResult, String&gt; call() throws Exception {
+<span class="nc" id="L175">            SimpleEntry&lt;CallResult, String&gt; result =</span>
+<span class="nc" id="L176">                model.searchTeamUpcomingMatches(name, cacheOverride);</span>
+<span class="nc" id="L177">            return result;</span>
+          }
+        };
+<span class="nc" id="L180">    pool.execute(task);</span>
+<span class="nc" id="L181">    task.setOnSucceeded(</span>
+        (event -&gt; {
+<span class="nc" id="L183">          SimpleEntry&lt;CallResult, String&gt; matchResult = task.getValue();</span>
+
+<span class="nc bnc" id="L185" title="All 2 branches missed.">          if (matchResult.getKey() == CallResult.CACHEHIT) {</span>
+<span class="nc" id="L186">            matchResult = model.matchVerifyCachedResult(matchResult);</span>
+<span class="nc" id="L187">            searchPage.processSearchMatchCacheHit(name, matchResult);</span>
+<span class="nc" id="L188">            return;</span>
+          }
+<span class="nc" id="L190">          updateMatchModelStates(name, matchResult);</span>
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">          if (matchResult.getKey() == CallResult.ERROR) {</span>
+<span class="nc" id="L193">            searchPage.displayHandleTeamMatchesClickError(matchResult);</span>
+<span class="nc" id="L194">            return;</span>
+          }
+<span class="nc" id="L196">          Match[] match = model.stringToMatchArray(matchResult.getValue());</span>
+<span class="nc" id="L197">          searchPage.displayHandleTeamMatchesClick(match, model.getHighlightColor());</span>
+<span class="nc" id="L198">        }));</span>
+<span class="nc" id="L199">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

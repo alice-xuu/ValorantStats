@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="DetailsManagerTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2023-09-30T08:17:17" hostname="MacBook-AX.local" time="0.125">
+  <properties/>
+  <testcase name="breadcrumbReportStringMultiple()" classname="DetailsManagerTest" time="0.064"/>
+  <testcase name="breadcrumbReportString()" classname="DetailsManagerTest" time="0.005"/>
+  <testcase name="getFastModeOn()" classname="DetailsManagerTest" time="0.008"/>
+  <testcase name="setHistoryMultiItem()" classname="DetailsManagerTest" time="0.003"/>
+  <testcase name="backHistoryPast()" classname="DetailsManagerTest" time="0.008"/>
+  <testcase name="backHistory()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="backHistoryAddTwoBackOne()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="backHistoryAddTwoBackTwo()" classname="DetailsManagerTest" time="0.001"/>
+  <testcase name="shortFormReportString()" classname="DetailsManagerTest" time="0.001"/>
+  <testcase name="getAppInfo()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="setHistorySingleItem()" classname="DetailsManagerTest" time="0.001"/>
+  <testcase name="getFastModeOff()" classname="DetailsManagerTest" time="0.0"/>
+  <testcase name="historyAddMatches()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="backHistoryAddOne()" classname="DetailsManagerTest" time="0.001"/>
+  <testcase name="getFastModeInitial()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="shortFormReportStringMultiple()" classname="DetailsManagerTest" time="0.002"/>
+  <testcase name="historyAdd()" classname="DetailsManagerTest" time="0.001"/>
+  <testcase name="backHistoryAfterTwoAddHistory()" classname="DetailsManagerTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

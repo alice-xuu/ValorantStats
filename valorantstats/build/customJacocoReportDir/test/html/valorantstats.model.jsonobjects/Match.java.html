@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Match.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">major_project</a> &gt; <a href="index.source.html" class="el_package">valorantstats.model.jsonobjects</a> &gt; <span class="el_source">Match.java</span></div><h1>Match.java</h1><pre class="source lang-java linenums">package valorantstats.model.jsonobjects;
+
+import java.util.List;
+
+/** Represents match data retrieved from Pandascore */
+public class Match {
+
+  String begin_at;
+  boolean detailed_stats;
+  boolean draw;
+  boolean end_at;
+  boolean forfeit;
+  Integer game_advantage;
+  List&lt;Game&gt; games;
+  Integer id;
+  League league;
+  Integer league_id;
+  Live live;
+  String match_type;
+  String modified_at;
+  String name;
+  Integer number_of_games;
+  List&lt;Opponent&gt; opponents;
+  String original_scheduled_at;
+  boolean rescheduled;
+  List&lt;ResultObject&gt; results;
+  String scheduled_at;
+  Serie serie;
+  Integer serie_id;
+  String slug;
+  String status;
+  List&lt;Stream&gt; streams_list;
+  Integer tournament_id;
+  Object videogame;
+  VideogameVersion videogame_version;
+  TeamObject winner; // 2 options
+  Integer winner_id;
+
+  public Match(
+      String begin_at,
+      boolean detailed_stats,
+      boolean draw,
+      boolean end_at,
+      boolean forfeit,
+      Integer game_advantage,
+      List&lt;Game&gt; games,
+      Integer id,
+      League league,
+      Integer league_id,
+      Live live,
+      String match_type,
+      String modified_at,
+      String name,
+      Integer number_of_games,
+      List&lt;Opponent&gt; opponents,
+      String original_scheduled_at,
+      boolean rescheduled,
+      List&lt;ResultObject&gt; results,
+      String scheduled_at,
+      Serie serie,
+      Integer serie_id,
+      String slug,
+      String status,
+      List&lt;Stream&gt; streams_list,
+      Integer tournament_id,
+      Object videogame,
+      VideogameVersion videogame_version,
+      TeamObject winner,
+<span class="nc" id="L69">      Integer winner_id) {</span>
+<span class="nc" id="L70">    this.begin_at = begin_at;</span>
+<span class="nc" id="L71">    this.detailed_stats = detailed_stats;</span>
+<span class="nc" id="L72">    this.draw = draw;</span>
+<span class="nc" id="L73">    this.end_at = end_at;</span>
+<span class="nc" id="L74">    this.forfeit = forfeit;</span>
+<span class="nc" id="L75">    this.game_advantage = game_advantage;</span>
+<span class="nc" id="L76">    this.games = games;</span>
+<span class="nc" id="L77">    this.id = id;</span>
+<span class="nc" id="L78">    this.league = league;</span>
+<span class="nc" id="L79">    this.league_id = league_id;</span>
+<span class="nc" id="L80">    this.live = live;</span>
+<span class="nc" id="L81">    this.match_type = match_type;</span>
+<span class="nc" id="L82">    this.modified_at = modified_at;</span>
+<span class="nc" id="L83">    this.name = name;</span>
+<span class="nc" id="L84">    this.number_of_games = number_of_games;</span>
+<span class="nc" id="L85">    this.opponents = opponents;</span>
+<span class="nc" id="L86">    this.original_scheduled_at = original_scheduled_at;</span>
+<span class="nc" id="L87">    this.rescheduled = rescheduled;</span>
+<span class="nc" id="L88">    this.results = results;</span>
+<span class="nc" id="L89">    this.scheduled_at = scheduled_at;</span>
+<span class="nc" id="L90">    this.serie = serie;</span>
+<span class="nc" id="L91">    this.serie_id = serie_id;</span>
+<span class="nc" id="L92">    this.slug = slug;</span>
+<span class="nc" id="L93">    this.status = status;</span>
+<span class="nc" id="L94">    this.streams_list = streams_list;</span>
+<span class="nc" id="L95">    this.tournament_id = tournament_id;</span>
+<span class="nc" id="L96">    this.videogame = videogame;</span>
+<span class="nc" id="L97">    this.videogame_version = videogame_version;</span>
+<span class="nc" id="L98">    this.winner = winner;</span>
+<span class="nc" id="L99">    this.winner_id = winner_id;</span>
+<span class="nc" id="L100">  }</span>
+
+  public String getBegin_at() {
+<span class="nc" id="L103">    return begin_at;</span>
+  }
+
+  public boolean isDetailed_stats() {
+<span class="nc" id="L107">    return detailed_stats;</span>
+  }
+
+  public boolean isDraw() {
+<span class="nc" id="L111">    return draw;</span>
+  }
+
+  public boolean isEnd_at() {
+<span class="nc" id="L115">    return end_at;</span>
+  }
+
+  public boolean isForfeit() {
+<span class="nc" id="L119">    return forfeit;</span>
+  }
+
+  public Integer getGame_advantage() {
+<span class="nc" id="L123">    return game_advantage;</span>
+  }
+
+  public List&lt;Game&gt; getGames() {
+<span class="nc" id="L127">    return games;</span>
+  }
+
+  public Integer getId() {
+<span class="nc" id="L131">    return id;</span>
+  }
+
+  public League getLeague() {
+<span class="nc" id="L135">    return league;</span>
+  }
+
+  public Integer getLeague_id() {
+<span class="fc" id="L139">    return league_id;</span>
+  }
+
+  public Live getLive() {
+<span class="nc" id="L143">    return live;</span>
+  }
+
+  public String getMatch_type() {
+<span class="nc" id="L147">    return match_type;</span>
+  }
+
+  public String getModified_at() {
+<span class="nc" id="L151">    return modified_at;</span>
+  }
+
+  public String getName() {
+<span class="fc" id="L155">    return name;</span>
+  }
+
+  public Integer getNumber_of_games() {
+<span class="fc" id="L159">    return number_of_games;</span>
+  }
+
+  public List&lt;Opponent&gt; getOpponents() {
+<span class="nc" id="L163">    return opponents;</span>
+  }
+
+  public String getOriginal_scheduled_at() {
+<span class="nc" id="L167">    return original_scheduled_at;</span>
+  }
+
+  public boolean isRescheduled() {
+<span class="nc" id="L171">    return rescheduled;</span>
+  }
+
+  public List&lt;ResultObject&gt; getResults() {
+<span class="nc" id="L175">    return results;</span>
+  }
+
+  public String getScheduled_at() {
+<span class="nc" id="L179">    return scheduled_at;</span>
+  }
+
+  public Serie getSerie() {
+<span class="nc" id="L183">    return serie;</span>
+  }
+
+  public Integer getSerie_id() {
+<span class="nc" id="L187">    return serie_id;</span>
+  }
+
+  public String getSlug() {
+<span class="nc" id="L191">    return slug;</span>
+  }
+
+  public String getStatus() {
+<span class="nc" id="L195">    return status;</span>
+  }
+
+  public List&lt;Stream&gt; getStreams_list() {
+<span class="nc" id="L199">    return streams_list;</span>
+  }
+
+  public Integer getTournament_id() {
+<span class="nc" id="L203">    return tournament_id;</span>
+  }
+
+  public Object getVideogame() {
+<span class="nc" id="L207">    return videogame;</span>
+  }
+
+  public VideogameVersion getVideogame_version() {
+<span class="nc" id="L211">    return videogame_version;</span>
+  }
+
+  public TeamObject getWinner() {
+<span class="nc" id="L215">    return winner;</span>
+  }
+
+  public Integer getWinner_id() {
+<span class="nc" id="L219">    return winner_id;</span>
+  }
+
+  public class Game {
+    String begin_at;
+    boolean complete;
+    boolean detailed_stats;
+    String end_at;
+    boolean finished;
+    boolean forfeit;
+    Integer id;
+    Integer length;
+    Integer match_id;
+    Integer position;
+    String status;
+    Winner winner;
+    String winner_type;
+
+    public Game(
+        String begin_at,
+        boolean complete,
+        boolean detailed_stats,
+        String end_at,
+        boolean finished,
+        boolean forfeit,
+        Integer id,
+        Integer length,
+        Integer match_id,
+        Integer position,
+        String status,
+        Winner winner,
+<span class="nc" id="L250">        String winner_type) {</span>
+<span class="nc" id="L251">      this.begin_at = begin_at;</span>
+<span class="nc" id="L252">      this.complete = complete;</span>
+<span class="nc" id="L253">      this.detailed_stats = detailed_stats;</span>
+<span class="nc" id="L254">      this.end_at = end_at;</span>
+<span class="nc" id="L255">      this.finished = finished;</span>
+<span class="nc" id="L256">      this.forfeit = forfeit;</span>
+<span class="nc" id="L257">      this.id = id;</span>
+<span class="nc" id="L258">      this.length = length;</span>
+<span class="nc" id="L259">      this.match_id = match_id;</span>
+<span class="nc" id="L260">      this.position = position;</span>
+<span class="nc" id="L261">      this.status = status;</span>
+<span class="nc" id="L262">      this.winner = winner;</span>
+<span class="nc" id="L263">      this.winner_type = winner_type;</span>
+<span class="nc" id="L264">    }</span>
+
+    public String getBegin_at() {
+<span class="nc" id="L267">      return begin_at;</span>
+    }
+
+    public boolean isComplete() {
+<span class="nc" id="L271">      return complete;</span>
+    }
+
+    public boolean isDetailed_stats() {
+<span class="nc" id="L275">      return detailed_stats;</span>
+    }
+
+    public String getEnd_at() {
+<span class="nc" id="L279">      return end_at;</span>
+    }
+
+    public boolean isFinished() {
+<span class="nc" id="L283">      return finished;</span>
+    }
+
+    public boolean isForfeit() {
+<span class="nc" id="L287">      return forfeit;</span>
+    }
+
+    public Integer getId() {
+<span class="nc" id="L291">      return id;</span>
+    }
+
+    public Integer getLength() {
+<span class="nc" id="L295">      return length;</span>
+    }
+
+    public Integer getMatch_id() {
+<span class="nc" id="L299">      return match_id;</span>
+    }
+
+    public Integer getPosition() {
+<span class="nc" id="L303">      return position;</span>
+    }
+
+    public String getStatus() {
+<span class="nc" id="L307">      return status;</span>
+    }
+
+    public Winner getWinner() {
+<span class="nc" id="L311">      return winner;</span>
+    }
+
+    public String getWinner_type() {
+<span class="nc" id="L315">      return winner_type;</span>
+    }
+  }
+
+  public class Winner {
+    Integer id;
+    String type;
+
+<span class="nc" id="L323">    public Winner(Integer id, String type) {</span>
+<span class="nc" id="L324">      this.id = id;</span>
+<span class="nc" id="L325">      this.type = type;</span>
+<span class="nc" id="L326">    }</span>
+
+    public Integer getId() {
+<span class="nc" id="L329">      return id;</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L333">      return type;</span>
+    }
+  }
+
+  public class League {
+    Integer id;
+    String image_url;
+    String modified_at;
+    String name;
+    String slug;
+    String url;
+
+    public League(
+<span class="nc" id="L346">        Integer id, String image_url, String modified_at, String name, String slug, String url) {</span>
+<span class="nc" id="L347">      this.id = id;</span>
+<span class="nc" id="L348">      this.image_url = image_url;</span>
+<span class="nc" id="L349">      this.modified_at = modified_at;</span>
+<span class="nc" id="L350">      this.name = name;</span>
+<span class="nc" id="L351">      this.slug = slug;</span>
+<span class="nc" id="L352">      this.url = url;</span>
+<span class="nc" id="L353">    }</span>
+
+    public Integer getId() {
+<span class="nc" id="L356">      return id;</span>
+    }
+
+    public String getImage_url() {
+<span class="nc" id="L360">      return image_url;</span>
+    }
+
+    public String getModified_at() {
+<span class="nc" id="L364">      return modified_at;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L368">      return name;</span>
+    }
+
+    public String getSlug() {
+<span class="nc" id="L372">      return slug;</span>
+    }
+
+    public String getUrl() {
+<span class="nc" id="L376">      return url;</span>
+    }
+  }
+
+  public class Live {
+    String opens_at;
+    boolean supported;
+    String url;
+
+<span class="nc" id="L385">    public Live(String opens_at, boolean supported, String url) {</span>
+<span class="nc" id="L386">      this.opens_at = opens_at;</span>
+<span class="nc" id="L387">      this.supported = supported;</span>
+<span class="nc" id="L388">      this.url = url;</span>
+<span class="nc" id="L389">    }</span>
+
+    public String getOpens_at() {
+<span class="nc" id="L392">      return opens_at;</span>
+    }
+
+    public boolean isSupported() {
+<span class="nc" id="L396">      return supported;</span>
+    }
+
+    public String getUrl() {
+<span class="nc" id="L400">      return url;</span>
+    }
+  }
+
+  public class Opponent {
+    TeamObject opponent; // two options
+    String type;
+
+<span class="nc" id="L408">    public Opponent(TeamObject opponent, String type) {</span>
+<span class="nc" id="L409">      this.opponent = opponent;</span>
+<span class="nc" id="L410">      this.type = type;</span>
+<span class="nc" id="L411">    }</span>
+
+    public TeamObject getOpponent() {
+<span class="nc" id="L414">      return opponent;</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L418">      return type;</span>
+    }
+  }
+
+  public class TeamObject {
+    String acronym;
+    Integer id;
+    String image_url;
+    String location;
+    String modified_at;
+    String name;
+    String slug;
+
+    public TeamObject(
+        String acronym,
+        Integer id,
+        String image_url,
+        String location,
+        String modified_at,
+        String name,
+<span class="nc" id="L438">        String slug) {</span>
+<span class="nc" id="L439">      this.acronym = acronym;</span>
+<span class="nc" id="L440">      this.id = id;</span>
+<span class="nc" id="L441">      this.image_url = image_url;</span>
+<span class="nc" id="L442">      this.location = location;</span>
+<span class="nc" id="L443">      this.modified_at = modified_at;</span>
+<span class="nc" id="L444">      this.name = name;</span>
+<span class="nc" id="L445">      this.slug = slug;</span>
+<span class="nc" id="L446">    }</span>
+
+    public String getAcronym() {
+<span class="nc" id="L449">      return acronym;</span>
+    }
+
+    public Integer getId() {
+<span class="nc" id="L453">      return id;</span>
+    }
+
+    public String getImage_url() {
+<span class="nc" id="L457">      return image_url;</span>
+    }
+
+    public String getLocation() {
+<span class="nc" id="L461">      return location;</span>
+    }
+
+    public String getModified_at() {
+<span class="nc" id="L465">      return modified_at;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L469">      return name;</span>
+    }
+
+    public String getSlug() {
+<span class="nc" id="L473">      return slug;</span>
+    }
+  }
+
+  public class ResultObject { // two options
+    Integer score;
+    Integer team_id;
+
+<span class="nc" id="L481">    public ResultObject(Integer score, Integer team_id) {</span>
+<span class="nc" id="L482">      this.score = score;</span>
+<span class="nc" id="L483">      this.team_id = team_id;</span>
+<span class="nc" id="L484">    }</span>
+
+    public Integer getScore() {
+<span class="nc" id="L487">      return score;</span>
+    }
+
+    public Integer getTeam_id() {
+<span class="nc" id="L491">      return team_id;</span>
+    }
+  }
+
+  public class Serie {
+    String begin_at;
+    String description;
+    String end_at;
+    String full_name;
+    Integer id;
+    Integer league_id;
+    String modified_at;
+    String name;
+    String season;
+    String slug;
+    Integer winner_id;
+    String winner_type;
+    Integer year;
+
+    public Serie(
+        String begin_at,
+        String description,
+        String end_at,
+        String full_name,
+        Integer id,
+        Integer league_id,
+        String modified_at,
+        String name,
+        String season,
+        String slug,
+        Integer winner_id,
+        String winner_type,
+<span class="nc" id="L523">        Integer year) {</span>
+<span class="nc" id="L524">      this.begin_at = begin_at;</span>
+<span class="nc" id="L525">      this.description = description;</span>
+<span class="nc" id="L526">      this.end_at = end_at;</span>
+<span class="nc" id="L527">      this.full_name = full_name;</span>
+<span class="nc" id="L528">      this.id = id;</span>
+<span class="nc" id="L529">      this.league_id = league_id;</span>
+<span class="nc" id="L530">      this.modified_at = modified_at;</span>
+<span class="nc" id="L531">      this.name = name;</span>
+<span class="nc" id="L532">      this.season = season;</span>
+<span class="nc" id="L533">      this.slug = slug;</span>
+<span class="nc" id="L534">      this.winner_id = winner_id;</span>
+<span class="nc" id="L535">      this.winner_type = winner_type;</span>
+<span class="nc" id="L536">      this.year = year;</span>
+<span class="nc" id="L537">    }</span>
+
+    public String getBegin_at() {
+<span class="nc" id="L540">      return begin_at;</span>
+    }
+
+    public String getDescription() {
+<span class="nc" id="L544">      return description;</span>
+    }
+
+    public String getEnd_at() {
+<span class="nc" id="L548">      return end_at;</span>
+    }
+
+    public String getFull_name() {
+<span class="nc" id="L552">      return full_name;</span>
+    }
+
+    public Integer getId() {
+<span class="nc" id="L556">      return id;</span>
+    }
+
+    public Integer getLeague_id() {
+<span class="nc" id="L560">      return league_id;</span>
+    }
+
+    public String getModified_at() {
+<span class="nc" id="L564">      return modified_at;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L568">      return name;</span>
+    }
+
+    public String getSeason() {
+<span class="nc" id="L572">      return season;</span>
+    }
+
+    public String getSlug() {
+<span class="nc" id="L576">      return slug;</span>
+    }
+
+    public Integer getWinner_id() {
+<span class="nc" id="L580">      return winner_id;</span>
+    }
+
+    public String getWinner_type() {
+<span class="nc" id="L584">      return winner_type;</span>
+    }
+
+    public Integer getYear() {
+<span class="nc" id="L588">      return year;</span>
+    }
+  }
+
+  public class Stream {
+    String embed_url;
+    String language;
+    boolean main;
+    boolean official;
+    String raw_url;
+
+    public Stream(
+<span class="nc" id="L600">        String embed_url, String language, boolean main, boolean official, String raw_url) {</span>
+<span class="nc" id="L601">      this.embed_url = embed_url;</span>
+<span class="nc" id="L602">      this.language = language;</span>
+<span class="nc" id="L603">      this.main = main;</span>
+<span class="nc" id="L604">      this.official = official;</span>
+<span class="nc" id="L605">      this.raw_url = raw_url;</span>
+<span class="nc" id="L606">    }</span>
+
+    public String getEmbed_url() {
+<span class="nc" id="L609">      return embed_url;</span>
+    }
+
+    public String getLanguage() {
+<span class="nc" id="L613">      return language;</span>
+    }
+
+    public boolean isMain() {
+<span class="nc" id="L617">      return main;</span>
+    }
+
+    public boolean isOfficial() {
+<span class="nc" id="L621">      return official;</span>
+    }
+
+    public String getRaw_url() {
+<span class="nc" id="L625">      return raw_url;</span>
+    }
+  }
+
+  public class Tournament {
+    String begin_at;
+    String end_at;
+    Integer id;
+    Integer league_id;
+    boolean live_supported;
+    String modified_at;
+    String name;
+    String prizepool;
+    Integer serie_id;
+    String slug;
+    String tier;
+    Integer winner_id;
+    String winner_type;
+
+    public Tournament(
+        String begin_at,
+        String end_at,
+        Integer id,
+        Integer league_id,
+        boolean live_supported,
+        String modified_at,
+        String name,
+        String prizepool,
+        Integer serie_id,
+        String slug,
+        String tier,
+        Integer winner_id,
+<span class="nc" id="L657">        String winner_type) {</span>
+<span class="nc" id="L658">      this.begin_at = begin_at;</span>
+<span class="nc" id="L659">      this.end_at = end_at;</span>
+<span class="nc" id="L660">      this.id = id;</span>
+<span class="nc" id="L661">      this.league_id = league_id;</span>
+<span class="nc" id="L662">      this.live_supported = live_supported;</span>
+<span class="nc" id="L663">      this.modified_at = modified_at;</span>
+<span class="nc" id="L664">      this.name = name;</span>
+<span class="nc" id="L665">      this.prizepool = prizepool;</span>
+<span class="nc" id="L666">      this.serie_id = serie_id;</span>
+<span class="nc" id="L667">      this.slug = slug;</span>
+<span class="nc" id="L668">      this.tier = tier;</span>
+<span class="nc" id="L669">      this.winner_id = winner_id;</span>
+<span class="nc" id="L670">      this.winner_type = winner_type;</span>
+<span class="nc" id="L671">    }</span>
+
+    public String getBegin_at() {
+<span class="nc" id="L674">      return begin_at;</span>
+    }
+
+    public String getEnd_at() {
+<span class="nc" id="L678">      return end_at;</span>
+    }
+
+    public Integer getId() {
+<span class="nc" id="L682">      return id;</span>
+    }
+
+    public Integer getLeague_id() {
+<span class="nc" id="L686">      return league_id;</span>
+    }
+
+    public boolean isLive_supported() {
+<span class="nc" id="L690">      return live_supported;</span>
+    }
+
+    public String getModified_at() {
+<span class="nc" id="L694">      return modified_at;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L698">      return name;</span>
+    }
+
+    public String getPrizepool() {
+<span class="nc" id="L702">      return prizepool;</span>
+    }
+
+    public Integer getSerie_id() {
+<span class="nc" id="L706">      return serie_id;</span>
+    }
+
+    public String getSlug() {
+<span class="nc" id="L710">      return slug;</span>
+    }
+
+    public String getTier() {
+<span class="nc" id="L714">      return tier;</span>
+    }
+
+    public Integer getWinner_id() {
+<span class="nc" id="L718">      return winner_id;</span>
+    }
+
+    public String getWinner_type() {
+<span class="nc" id="L722">      return winner_type;</span>
+    }
+  }
+
+  public class VideogameVersion {
+    boolean current;
+    String name;
+
+<span class="nc" id="L730">    public VideogameVersion(boolean current, String name) {</span>
+<span class="nc" id="L731">      this.current = current;</span>
+<span class="nc" id="L732">      this.name = name;</span>
+<span class="nc" id="L733">    }</span>
+
+    public boolean isCurrent() {
+<span class="nc" id="L736">      return current;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L740">      return name;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
